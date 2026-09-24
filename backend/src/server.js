@@ -124,12 +124,13 @@ app.get('/api/keycap-stl', (req, res) => {
   const w = parseFloat(q.w) || 1;
   const h = parseFloat(q.h) || 1;
   const dish = String(q.dish || 'auto');
-  // corner/depth 缺省时采用该 profile 的 KeyV2 默认值（keycapModelParams 提供）
+  // corner/depth/edgeRadius 缺省时采用该 profile 的 KeyV2 默认值（keycapModelParams 提供）
   const corner = q.corner != null ? parseFloat(q.corner) : undefined;
   const depth = q.depth != null ? parseFloat(q.depth) : undefined;
+  const edgeRadius = q.edgeRadius != null ? parseFloat(q.edgeRadius) : undefined; // 顶面边缘圆角 mm
   try {
-    const stl = generateKeycapStl({ profile, row, w, h, dish, corner, depth });
-    const suffix = (dish !== 'auto' ? `_${dish}` : '') + (corner != null ? `_r${corner}` : '') + (depth != null ? `_d${depth}` : '');
+    const stl = generateKeycapStl({ profile, row, w, h, dish, corner, depth, edgeRadius });
+    const suffix = (dish !== 'auto' ? `_${dish}` : '') + (corner != null ? `_r${corner}` : '') + (depth != null ? `_d${depth}` : '') + (edgeRadius != null ? `_e${edgeRadius}` : '');
     res.setHeader('Content-Type', 'model/stl');
     res.setHeader('Content-Disposition', `attachment; filename="keycap_${profile}_${row}_${w}u${suffix}.stl"`);
     res.send(stl);

@@ -20,6 +20,8 @@ const { keycapGeo } = require('../../frontend/public/js/keycapGeo.js');
  * @param {string} [opts.dish='auto'] - auto|cylindrical|spherical|flat|dome
  * @param {number} [opts.corner=1]  - 轮廓圆角半径 mm
  * @param {number} [opts.depth=0.8] - dish 深度 mm
+ * @param {number} [opts.edgeRadius=0] - 顶面边缘圆角 mm（0=直棱；>0 顶部 smoothstep 圆弧过渡，
+ *                                      消除竖直四面与顶面的锋利折角）
  * @param {number} [opts.seg=6]     - 每边采样段数
  * @returns {string} ASCII STL
  */

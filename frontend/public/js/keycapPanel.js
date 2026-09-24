@@ -92,9 +92,11 @@ function currentParams() {
 
 function currentOpts() {
   const cornerRaw = $('kc-p-corner') ? $('kc-p-corner').value : 'auto';
+  const edgeRaw = $('kc-p-topcorner') ? $('kc-p-topcorner').value : '0';
   return {
     dish: $('kc-p-dish') ? $('kc-p-dish').value : 'auto',
     corner: cornerRaw === 'auto' ? undefined : parseFloat(cornerRaw) || 0,
+    edgeRadius: parseFloat(edgeRaw) || 0,      // 顶面边缘圆角 mm
   };
 }
 
@@ -110,7 +112,8 @@ function renderParams() {
       <tr><th>总高</th><td>${g.height} mm</td><th>顶面倾角</th><td>${g.angle}°（负=向后翘 R1 类 / 正=向打字员翘 R4 类）</td></tr>
       <tr><th>顶面形态</th><td>${dishName}</td><th>dish 深度</th><td>${g.dishDepth} mm</td></tr>
       <tr><th>顶面后移</th><td>${g.topSkew} mm</td><th>建模层数</th><td>${g.slices} 层${g.sideSculpt ? '（桶形侧面 ' + g.sideSculpt + '）' : ''}</td></tr>
-      <tr><th>边缘圆角</th><td>${cornerShow}</td><th>底面 1u</th><td>${g.bottomKeyWidth} × ${g.bottomKeyHeight} mm</td></tr>
+      <tr><th>边缘圆角</th><td>${cornerShow}</td><th>顶面圆角</th><td>${(o.edgeRadius || 0) > 0 ? o.edgeRadius + ' mm（圆滑）' : '直棱'}</td></tr>
+      <tr><th>底面 1u</th><td>${g.bottomKeyWidth} × ${g.bottomKeyHeight} mm</td><th>键距</th><td>19.05 mm（标准）</td></tr>
     </table>`;
   requestModel();
 }
@@ -226,7 +229,7 @@ function downloadStl() {
   const row = $('kc-p-row').value;
   const w = $('kc-p-width').value;
   const o = currentOpts();
-  const qs = `profile=${encodeURIComponent(pid)}&row=${row}&w=${w}&dish=${encodeURIComponent(o.dish)}&corner=${o.corner}`;
+  const qs = `profile=${encodeURIComponent(pid)}&row=${row}&w=${w}&dish=${encodeURIComponent(o.dish)}&corner=${o.corner}&edgeRadius=${o.edgeRadius || 0}`;
   fetch(`/api/keycap-stl?${qs}`)
     .then((r) => (r.ok ? r.blob() : Promise.reject('HTTP ' + r.status)))
     .then((blob) => {
@@ -256,6 +259,7 @@ function init() {
   $('kc-p-width').addEventListener('change', renderParams);
   if ($('kc-p-dish')) $('kc-p-dish').addEventListener('change', renderParams);
   if ($('kc-p-corner')) $('kc-p-corner').addEventListener('change', renderParams);
+  if ($('kc-p-topcorner')) $('kc-p-topcorner').addEventListener('change', renderParams);
   $('kc-download-stl').addEventListener('click', downloadStl);
   $('kc-reset-view').addEventListener('click', () => { ROT.x = 0.5; ROT.y = 0.4; ZOOM = 1.2; });
   renderParams();

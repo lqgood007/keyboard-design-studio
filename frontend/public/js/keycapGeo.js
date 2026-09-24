@@ -87,7 +87,9 @@ function dishOffset(dish, tx, tz, topW, topD, depth) {
  * 生成键帽网格（KeyV2 多层截面）
  * @param {Object} p - keycapModelParams 输出（baseW/baseD/topW/topD/height/angle/topShape/
  *                     topSkew/dishDepth/corner/slices/sideSculpt/moreSideSculpt/cornerSculpt）
- * @param {Object} [opts] 覆盖项：dish / corner / depth / slices / seg
+ * @param {Object} [opts] 覆盖项：dish / corner / depth / slices / seg / edgeRadius
+ * @param {number} [opts.edgeRadius=0] - 顶面边缘圆角 mm（0=直棱；>0 顶部以 smoothstep 圆弧过渡，
+ *                                      消除竖直四面与顶面的锋利折角，如 0.3~1.2）
  */
 function keycapGeo(p, opts = {}) {
   const dish = opts.dish === 'auto' || !opts.dish ? (p.topShape || 'cylindrical') : opts.dish;
@@ -95,6 +97,7 @@ function keycapGeo(p, opts = {}) {
   const depth = opts.depth != null ? opts.depth : (p.dishDepth != null ? p.dishDepth : 0.8);
   const slices = opts.slices != null ? opts.slices : (p.slices || 1);
   const seg = opts.seg || 6;
+  const edgeR = opts.edgeRadius != null ? opts.edgeRadius : 0; // 顶面边缘圆角（mm）
 
   const baseW = p.baseW, baseD = p.baseD, topW = p.topW, topD = p.topD;
   const widthDiff = baseW - topW, heightDiff = baseD - topD;
@@ -107,10 +110,14 @@ function keycapGeo(p, opts = {}) {
   const tiltMax = -angle * Math.PI / 180;   // KeyV2 rotate([-top_tilt]) → 前低后高
 
   // 1) 逐层截面（KeyV2 placed_shape_slice）
+  //    顶面边缘圆角：edgeR>0 时，顶部 edgeFrac 高度内插入 subLayers 个细分层，
+  //    截面尺寸沿 smoothstep 曲线从线性过渡值圆弧过渡到顶面值
+  //    （smoothstep 两端切线为 0：与下方线性层、与顶面均圆滑相接 → 消除锋利折角）
+  const edgeFrac = edgeR > 0 && totalDepth > 0 ? Math.min(0.5, edgeR / totalDepth) : 0;
+  const subLayers = edgeFrac > 0 ? Math.max(4, Math.round(edgeR * 8)) : 0; // 顶部圆角细分层数
   const rings = [];            // 每层 3D 环点
   const local = [];            // 每层局部 (u, v)（顶层 dish 用）
-  for (let k = 0; k <= slices; k++) {
-    const prog = k / slices;
+  const buildRing = (prog) => {
     const ss = (1 - prog) * sideSculpt;             // side_sculpting(p)
     const cs = prog * prog * cornerSculpt;          // corner_sculpting(p)
     const w = baseW - (widthDiff - ss) * prog;      // 该层宽
@@ -125,7 +132,49 @@ function keycapGeo(p, opts = {}) {
     const ring = pts.map(([u, v]) => [u, v * sinT + depth_p, v * cosT + skew_p]);
     rings.push(ring);
     local.push(pts);
+  };
+  // 圆角细分层辅助：给定 prog 与显式 w/d 构建环（smoothstep 过渡用）
+  const buildRing2 = (prog, w, d) => {
+    const cs = prog * prog * cornerSculpt;
+    const r = Math.max(0.05, corner + cs);
+    const bow = moreSide * prog * 0.5;
+    const tilt = tiltMax * prog;
+    const depth_p = totalDepth * prog;
+    const skew_p = topSkew * prog;
+    const cosT = Math.cos(tilt), sinT = Math.sin(tilt);
+    const pts = roundedRectPoints(w / 2, d / 2, r, seg, bow);
+    const ring = pts.map(([u, v]) => [u, v * sinT + depth_p, v * cosT + skew_p]);
+    rings.push(ring);
+    local.push(pts);
+  };
+
+  // 线性段：0 → lastLin（保底 ≥8 层，保证直台 profile 侧壁不缺层）
+  // 有圆角时截断在过渡段起点（1-edgeFrac）处，无缝交给细分层
+  const linN = edgeFrac > 0 ? Math.max(slices, 8) : slices;
+  let lastLin = 0;
+  for (let k = 0; k <= linN; k++) {
+    const prog = k / linN;
+    if (edgeFrac > 0 && prog > 1 - edgeFrac) break;
+    buildRing(prog);
+    lastLin = prog;
   }
+  if (edgeFrac > 0) {
+    // 顶部圆角细分层：prog 从 lastLin 平滑插值到 1，
+    // 截面尺寸沿 smoothstep 从线性过渡值圆弧过渡到顶面值
+    // （smoothstep 两端切线为 0 → 与线性层、与顶面均圆滑相接，消除锋利折角）
+    const ss0 = (1 - lastLin) * sideSculpt;
+    const w0 = baseW - (widthDiff - ss0) * lastLin;  // 过渡起点宽
+    const d0 = baseD - (heightDiff - ss0) * lastLin; // 过渡起点深
+    const w1 = baseW - widthDiff;                    // prog=1 顶面宽
+    const d1 = baseD - heightDiff;                   // prog=1 顶面深
+    for (let i = 0; i <= subLayers; i++) {
+      const t = i / subLayers;                       // 0..1
+      const f = t * t * (3 - 2 * t);                 // smoothstep
+      const prog = lastLin + (1 - lastLin) * t;
+      buildRing2(prog, w0 + (w1 - w0) * f, d0 + (d1 - d0) * f);
+    }
+  }
+
 
   // 2) 顶点
   const v = [];
