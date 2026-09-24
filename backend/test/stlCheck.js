@@ -3,7 +3,33 @@
 const fs = require('fs');
 
 function stlBbox(path) {
-  const txt = fs.readFileSync(path, 'utf8');
+  const buf = fs.readFileSync(path);
+  // 二进制 STL：80B 头 + 4B 面数 + 每面 50B（法线 12B + 顶点 36B + 属性 2B）
+  if (buf.length >= 84 && buf.readUInt32LE(80) > 0) {
+    const nFacets = buf.readUInt32LE(80);
+    const xs = [], ys = [], zs = [];
+    let off = 84;
+    for (let i = 0; i < nFacets; i++) {
+      off += 12; // 跳过法线
+      for (let v = 0; v < 3; v++) {
+        xs.push(buf.readFloatLE(off)); ys.push(buf.readFloatLE(off + 4)); zs.push(buf.readFloatLE(off + 8));
+        off += 12;
+      }
+      off += 2; // 属性
+    }
+    const min = (a) => Math.min(...a), max = (a) => Math.max(...a);
+    return {
+      W: +(max(xs) - min(xs)).toFixed(2),
+      D: +(max(zs) - min(zs)).toFixed(2),
+      H: +(max(ys) - min(ys)).toFixed(2),
+      yMin: +min(ys).toFixed(2), yMax: +max(ys).toFixed(2),
+      zMin: +min(zs).toFixed(2), zMax: +max(zs).toFixed(2),
+      facets: nFacets,
+      bytes: buf.length,
+    };
+  }
+  // 兜底：ASCII 解析
+  const txt = buf.toString('utf8');
   const xs = [], ys = [], zs = [];
   const re = /vertex\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)/g;
   let m;
@@ -18,7 +44,7 @@ function stlBbox(path) {
     yMin: +min(ys).toFixed(2), yMax: +max(ys).toFixed(2),
     zMin: +min(zs).toFixed(2), zMax: +max(zs).toFixed(2),
     facets: (txt.match(/facet normal/g) || []).length,
-    bytes: txt.length,
+    bytes: buf.length,
   };
 }
 

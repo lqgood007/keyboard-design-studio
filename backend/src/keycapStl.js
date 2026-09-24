@@ -4,7 +4,7 @@
  *
  * 模型：圆角矩形轮廓梯形台 + 顶面 dish（auto/cylindrical/spherical/flat/dome），
  * 几何与前端 keycapGeo.js 同源（同一份 keycap.js 规格数据 + 同一网格算法）。
- * 输出 ASCII STL，可直接 3D 打印。
+ * 输出二进制 STL（所有模型查看器/切片软件通用），可直接 3D 打印。
  */
 
 const { keycapModelParams } = require('../../frontend/public/js/keycap.js');
@@ -22,8 +22,9 @@ const { keycapGeo } = require('../../frontend/public/js/keycapGeo.js');
  * @param {number} [opts.depth=0.8] - dish 深度 mm
  * @param {number} [opts.edgeRadius=0] - 顶面边缘圆角 mm（0=直棱；>0 顶部 smoothstep 圆弧过渡，
  *                                      消除竖直四面与顶面的锋利折角）
- * @param {number} [opts.seg=6]     - 每边采样段数
- * @returns {string} ASCII STL
+ * @param {number} [opts.seg=10]    - 每边采样段数（默认 10，四角圆弧平滑）
+ * @param {boolean} [opts.ascii=false] - true 时输出 ASCII STL（调试用）
+ * @returns {Buffer} 二进制 STL
  */
 function generateKeycapStl(opts = {}) {
   const p = keycapModelParams(opts.profile || 'oem', opts.row || 'R3', opts.w || 1, opts.h || 1);
@@ -39,20 +40,39 @@ function generateKeycapStl(opts = {}) {
     const l = Math.sqrt(n[0] ** 2 + n[1] ** 2 + n[2] ** 2) || 1;
     return [n[0] / l, n[1] / l, n[2] / l];
   };
-  const fmt = (n) => (Number.isFinite(n) && Math.abs(n) < 1e-12 ? '0' : +n.toFixed(6));
-
-  const lines = ['solid keycap'];
+  // 二进制 STL：80B 头 + 4B 面数 + 50B/面（法线 3f + 顶点 9f + 属性 2B）
+  // 二进制格式被 Blender / Bambu Studio / PrusaSlicer / Windows 3D 查看器等全部支持
+  if (opts.ascii) {
+    const fmtA = (n) => (Number.isFinite(n) && Math.abs(n) < 1e-12 ? '0' : +n.toFixed(6));
+    const lines = ['solid keycap'];
+    for (const [a, b, c] of faces) {
+      const p0 = vertices[a], p1 = vertices[b], p2 = vertices[c];
+      const n = norm(cross(sub(p1, p0), sub(p2, p0)));
+      lines.push(`  facet normal ${fmtA(n[0])} ${fmtA(n[1])} ${fmtA(n[2])}`);
+      lines.push('    outer loop');
+      for (const pt of [p0, p1, p2]) lines.push(`      vertex ${fmtA(pt[0])} ${fmtA(pt[1])} ${fmtA(pt[2])}`);
+      lines.push('    endloop');
+      lines.push('  endfacet');
+    }
+    lines.push('endsolid keycap');
+    return lines.join('\n');
+  }
+  const buf = Buffer.alloc(84 + faces.length * 50);
+  buf.write('keycap-design-studio', 0, 'ascii');
+  buf.writeUInt32LE(faces.length, 80);
+  let off = 84;
   for (const [a, b, c] of faces) {
     const p0 = vertices[a], p1 = vertices[b], p2 = vertices[c];
     const n = norm(cross(sub(p1, p0), sub(p2, p0)));
-    lines.push(`  facet normal ${fmt(n[0])} ${fmt(n[1])} ${fmt(n[2])}`);
-    lines.push('    outer loop');
-    for (const pt of [p0, p1, p2]) lines.push(`      vertex ${fmt(pt[0])} ${fmt(pt[1])} ${fmt(pt[2])}`);
-    lines.push('    endloop');
-    lines.push('  endfacet');
+    buf.writeFloatLE(n[0], off); buf.writeFloatLE(n[1], off + 4); buf.writeFloatLE(n[2], off + 8);
+    off += 12;
+    for (const pt of [p0, p1, p2]) {
+      buf.writeFloatLE(pt[0], off); buf.writeFloatLE(pt[1], off + 4); buf.writeFloatLE(pt[2], off + 8);
+      off += 12;
+    }
+    buf.writeUInt16LE(0, off); off += 2;   // 属性字节
   }
-  lines.push('endsolid keycap');
-  return lines.join('\n');
+  return buf;
 }
 
 module.exports = { generateKeycapStl };
