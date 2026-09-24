@@ -120,7 +120,7 @@ function renderParams() {
 
 /* ========== 3D 渲染（本地 three.js + ASCII STL） ========== */
 let renderer, scene, cam, meshGroup = null, stlText = '';
-const ROT = { x: 0.5, y: 0.4 }, ZOOM = 1.2;
+let ROT = { x: 0.5, y: 0.4 }, ZOOM = 1.2;   // ZOOM 需可写（滚轮缩放赋值），原 const 导致 wheel 处理器抛 TypeError
 let drag = null;
 
 function initThree() {
