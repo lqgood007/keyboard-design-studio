@@ -1,5 +1,7 @@
 # Keyboard Design Studio（键盘配列设计器）
 
+> 仓库：https://github.com/lqgood007/keyboard-design-studio
+
 基于 **KLE / SwillKB Plate Builder / Ergogen / KeyV2** 的开源联合项目，对标九尾（nine-fox.com/diy）的一站式网页键盘设计流程：
 
 > 网页画配列 → 一键生成 **定位板 DXF + KiCad PCB + 外壳 STL + 键帽 STL** → 打包下载
@@ -97,6 +99,9 @@
 ## 三、快速开始
 
 ```powershell
+# 前端 3D 依赖（three.js，clone 后首次运行需执行一次，生成 frontend/public/vendor/）
+powershell -ExecutionPolicy Bypass -File .\tools\fetch-vendor.ps1
+
 # 后端（Node >= 20）
 cd backend
 npm install          # 已安装过可跳过
@@ -139,10 +144,15 @@ powershell -ExecutionPolicy Bypass -File .\start-keyboard.ps1 -ServiceOnly   # �
 ## 四、使用流程
 
 1. **选预设**：26 款分组可选；或粘贴导入任意 KLE raw JSON / Ergogen YAML
-2. **编辑配列**：点选按键 → 属性面板 **− 数值 ＋** 步进控件（X/Y/W/H 0.25u、旋转 5°，按住连发），宽/高/旋转带常用值下拉（datalist）；方向键微调；加/删键
-3. **顶部标签页**：「配列设计」/「键帽模型」两个标签在同一页面切换——「键帽模型」含 **13 款 Profile** 统计表、尺寸规格表、材质/工艺表，以及参数化三维生成器（选 Profile/行/宽度/顶面形态/边缘圆角 → 3D 实时预览 → 下载可打印 STL；形态=自动·圆柱凹·球形凹·平面·球形凸出，圆角 0/0.5/1/1.5mm）
+2. **编辑配列**：点选按键 → 属性面板 **− 数值 ＋** 步进控件（X/Y/W/H 0.25u、旋转 5°，按住连发），
+   宽/高/旋转带常用值下拉（datalist）；方向键微调；加/删键
+3. **顶部标签页**：「配列设计」/「键帽模型」两个标签在同一页面切换——
+   「键帽模型」含 **13 款 Profile** 统计表、尺寸规格表、材质/工艺表，以及参数化三维生成器
+   （选 Profile/行/宽度/顶面形态/边缘圆角 → 3D 实时预览 → 下载可打印 STL；
+   形态=自动·圆柱凹·球形凹·平面·球形凸出，圆角 0/0.5/1/1.5mm）
 4. **调参数**：切孔尺寸（MX 默认 14mm）、板框外扩、底板/面板厚度、主控开关、四角螺丝孔/孔径
-5. **3D 预览**：外壳 STL 实时生成 → three.js 网页内渲染（拖拽旋转 / 滚轮缩放）；可切换键帽 Profile，键帽按行高/倾角/尺寸参数化建模并落在对应按键上方
+5. **3D 预览**：外壳 STL 实时生成 → three.js 网页内渲染（拖拽旋转 / 滚轮缩放）；
+   可切换键帽 Profile，键帽按行高/倾角/尺寸参数化建模并落在对应按键上方
 6. **分享**：生成分享链接（URL 携带 KLE 数据），任何人打开即加载同一配列
 7. **生成**：点「生成硬件文件」→ 下载 zip：
 
@@ -186,11 +196,15 @@ powershell -ExecutionPolicy Bypass -File .\start-keyboard.ps1 -ServiceOnly   # �
 
 1. **KLE 解析**：`kle-serial`（与 Ergogen 内部同款）把 raw 数组解析为按键几何（mm、中心坐标）
 2. **定位板**：按键包围盒外扩 → 板框 DXF；每键 14mm 圆角矩形切孔（支持旋转键）；四角 M3 螺丝孔（可调）
-3. **矩阵网络自动分配**：按键按几何 y 聚类成行（gap > 0.6u 断行），行内按 x 排序列号，`row_N / col_M` 网络逐键注入 → MX 轴与二极管成对串联进矩阵
+3. **矩阵网络自动分配**：按键按几何 y 聚类成行（gap > 0.6u 断行），行内按 x 排序列号，
+   `row_N / col_M` 网络逐键注入 → MX 轴与二极管成对串联进矩阵
 4. **主控**：矩阵几何中心下方（板外）自动放置 Promicro footprint，串入矩阵 + 供电/复位网络
-5. **PCB**（Ergogen）：KLE → canonical 配置 → `hull` 凸包 + `expand` 外扩得 PCB 边缘；`mx`/`diode`/`promicro` footprint 逐键放置；输出 KiCad 5 格式（`(module ...)`），可导入 KiCad 直接补铜布线
-6. **外壳**：底板 + 面板（挖键孔）+ 螺丝通孔，`@jscad/modeling` CSG 建模 → ASCII STL；3D 预览由后端实时生成 STL，前端 three.js（本地 vendor 托管，无外网依赖）渲染
-7. **键帽 STL**：KeyV2 多层截面几何（`side_sculpting=(1−p)×factor`、`corner_sculpting=p²×factor`、截面宽 `baseW−(widthDiff−side_sculpt)×p`、层位置 `[x_skew, top_skew×p, total_depth×p]`、层倾角 `−top_tilt×p`）→ ASCII STL
+5. **PCB**（Ergogen）：KLE → canonical 配置 → `hull` 凸包 + `expand` 外扩得 PCB 边缘；
+   `mx`/`diode`/`promicro` footprint 逐键放置；输出 KiCad 5 格式（`(module ...)`），可导入 KiCad 直接补铜布线
+6. **外壳**：底板 + 面板（挖键孔）+ 螺丝通孔，`@jscad/modeling` CSG 建模 → ASCII STL；
+   3D 预览由后端实时生成 STL，前端 three.js（本地 vendor 托管，无外网依赖）渲染
+7. **键帽 STL**：KeyV2 多层截面几何（`side_sculpting=(1−p)×factor`、`corner_sculpting=p²×factor`、
+   截面宽 `baseW−(widthDiff−side_sculpt)×p`、层位置 `[x_skew, top_skew×p, total_depth×p]`、层倾角 `−top_tilt×p`）→ ASCII STL
 
 ---
 
@@ -219,7 +233,7 @@ keyboard_design/
 │  └─ package.json
 ├─ frontend/
 │  └─ public/        # index.html + css/ + js/{app,preview,keycap,keycapGeo,keycapPanel}.js + vendor/（three.js 本地化）
-├─ tools/            # build_presets_data.js（预设真源）/ repair_app.js（重组 app.js）
+├─ tools/            # build_presets_data.js（预设真源）/ repair_app.js（重组 app.js）/ fetch-vendor.ps1（three.js 获取）
 ├─ tmp_kle_layouts.json   # KLE 官方 13 款原始数据（预设校准依据）
 ├─ tmp_qmk/          # QMK 官方布局（hhkb/lily58/crkbd/sofle，预设核对依据）
 ├─ start-keyboard.ps1    # 一键启动脚本（服务 + 公网隧道）
