@@ -20,8 +20,10 @@ function bindTabs() {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById('view-editor').hidden = btn.dataset.view !== 'editor';
-      document.getElementById('view-keycap').hidden = btn.dataset.view !== 'keycap';
+      const v = btn.dataset.view;
+      document.getElementById('view-editor').hidden = v !== 'editor';
+      document.getElementById('view-gallery').hidden = v !== 'gallery';
+      document.getElementById('view-keycap').hidden = v !== 'keycap';
     });
   });
 }

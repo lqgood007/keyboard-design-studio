@@ -4017,66 +4017,27 @@ const state = {
 const $ = (id) => document.getElementById(id);
 const svg = $('canvas');
 
-/* ========== 渲染 ========== */
+/* ========== 渲染（KLE 官方风格：外框+Lab提亮内框+12槽位标签） ========== */
 function render() {
-  svg.innerHTML = '';
-  const S = state.scale;
   if (!state.keys.length) {
+    svg.innerHTML = '';
     $('empty-hint').style.display = 'block';
     return;
   }
   $('empty-hint').style.display = 'none';
-
-  // 计算画布尺寸（含旋转包围）
-  let minX = 0, minY = 0, maxX = 0, maxY = 0;
-  for (const k of state.keys) {
-    const pts = rotatedCorners(k);
-    for (const [px, py] of pts) {
-      minX = Math.min(minX, px); maxX = Math.max(maxX, px);
-      minY = Math.min(minY, py); maxY = Math.max(maxY, py);
-    }
-  }
-  const pad = 1.2;
-  const w = (maxX - minX + pad * 2) * S;
-  const h = (maxY - minY + pad * 2) * S;
-  svg.setAttribute('viewBox', `${(minX - pad) * S} ${(minY - pad) * S} ${w} ${h}`);
-
-  // 背景网格
-  const grid = document.createElementNS(svgNS, 'rect');
-  grid.setAttribute('x', (minX - pad) * S); grid.setAttribute('y', (minY - pad) * S);
-  grid.setAttribute('width', w); grid.setAttribute('height', h);
-  grid.setAttribute('fill', '#fbfcfe');
-  svg.appendChild(grid);
-
-  state.keys.forEach((k, i) => {
-    const g = document.createElementNS(svgNS, 'g');
-    g.setAttribute('data-idx', i);
-    if (k.r) g.setAttribute('transform', `rotate(${k.r} ${k.rx * S} ${k.ry * S})`);
-
-    const rect = document.createElementNS(svgNS, 'rect');
-    rect.setAttribute('x', k.x * S); rect.setAttribute('y', k.y * S);
-    rect.setAttribute('width', k.w * S); rect.setAttribute('height', k.h * S);
-    rect.setAttribute('rx', 3); rect.setAttribute('ry', 3);
-    rect.setAttribute('fill', i === state.selected ? '#e0e7ff' : '#f1f5f9');
-    rect.setAttribute('class', 'key-rect' + (i === state.selected ? ' selected' : ''));
-    g.appendChild(rect);
-
-    if (k.label) {
-      const t = document.createElementNS(svgNS, 'text');
-      t.setAttribute('x', (k.x + k.w / 2) * S);
-      t.setAttribute('y', (k.y + k.h / 2) * S);
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('dominant-baseline', 'middle');
-      t.setAttribute('class', 'key-label');
-      t.textContent = k.label.length > 8 ? k.label.slice(0, 7) + '…' : k.label;
-      g.appendChild(t);
-    }
-    g.addEventListener('click', (e) => {
-      e.stopPropagation();
-      selectKey(i);
-    });
-    svg.appendChild(g);
+  // KleRender.renderLayout 直接消费 state.rows（KLE raw data），输出完整 SVG
+  const html = KleRender.renderLayout(state.rows, {
+    unit: state.scale,
+    selected: state.selected,
   });
+  svg.innerHTML = html;
+  // 让画布 SVG 拉伸填满容器（width/height 由 CSS 控制）
+  const root = svg.querySelector('svg');
+  if (root) {
+    root.removeAttribute('width');
+    root.removeAttribute('height');
+    root.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  }
 }
 
 const svgNS = 'http://www.w3.org/2000/svg';
@@ -4587,8 +4548,14 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// 空白区域点击取消选中
-svg.addEventListener('click', () => {
+// 画布点击：委托到键（data-idx）选中；空白区域取消选中
+svg.addEventListener('click', (e) => {
+  const g = e.target.closest ? e.target.closest('g[data-idx]') : null;
+  if (g) {
+    e.stopPropagation();
+    selectKey(Number(g.getAttribute('data-idx')));
+    return;
+  }
   if (state.selected >= 0) { state.selected = -1; syncProps(); render(); }
 });
 

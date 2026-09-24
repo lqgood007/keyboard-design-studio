@@ -14,6 +14,7 @@
 
 <nav class="tabs">
   <button type="button" class="tab active" data-view="editor">⌨ 配列设计</button>
+  <button type="button" class="tab" data-view="gallery">🖼 配列图库</button>
   <button type="button" class="tab" data-view="keycap">🧢 键帽模型</button>
 </nav>
 
@@ -151,6 +152,26 @@
 </main>
 </div>
 
+<!-- 配列图库面板（顶部标签页）：KLE 官方风格缩略图总览 -->
+<section id="view-gallery" class="gallery-panel" hidden>
+  <div class="gallery-head">
+    <h3>配列图库</h3>
+    <p class="gallery-sub">参考 keyboard-layout-editor.com 官方渲染风格（外框+提亮内框+12 槽位标签）；点击卡片载入编辑器。</p>
+    <div class="gallery-tools">
+      <label>搜索 <input id="gallery-search" type="search" placeholder="名称 / 键数 / 尺寸…"></label>
+      <label>分组
+        <select id="gallery-group">
+          <option value="all">全部</option>
+          <option value="内置预设">内置预设</option>
+          <option value="KLE 官方">KLE 官方</option>
+        </select>
+      </label>
+      <span id="gallery-count"></span>
+    </div>
+  </div>
+  <div id="gallery-grid" class="gallery-grid"></div>
+</section>
+
 <!-- 键帽模型面板（顶部标签页） -->
 <section id="view-keycap" class="keycap-panel" hidden>
   <div class="kc-grid">
@@ -238,7 +259,9 @@
 
 <script src="js/keycap.js"></script>
 <script src="js/keycapGeo.js"></script>
+<script src="js/kleRender.js"></script>
 <script src="js/app.js"></script>
+<script src="js/gallery.js"></script>
 <script type="module" src="js/keycapPanel.js"></script>
 <script type="module" src="js/preview.js"></script>
 </body>

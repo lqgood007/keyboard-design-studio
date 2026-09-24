@@ -1,0 +1,322 @@
+{
+  "source": "https://github.com/ijprest/keyboard-layout-editor",
+  "generated_from": "layouts.json (presets) + samples/ (samples)",
+  "count": 21,
+  "layouts": [
+    {
+      "group": "presets",
+      "name": "ANSI 104",
+      "slug": "ansi-104",
+      "keys": 104,
+      "size_u": [
+        22.5,
+        6.5
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/ansi-104.json",
+      "svg": "presets/ansi-104.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "ANSI 104 (big-ass enter)",
+      "slug": "ansi-104-big-ass-enter",
+      "keys": 104,
+      "size_u": [
+        22.5,
+        6.5
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/ansi-104-big-ass-enter.json",
+      "svg": "presets/ansi-104-big-ass-enter.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "ISO 105",
+      "slug": "iso-105",
+      "keys": 105,
+      "size_u": [
+        22.5,
+        6.5
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/iso-105.json",
+      "svg": "presets/iso-105.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "Default 60%",
+      "slug": "default-60",
+      "keys": 61,
+      "size_u": [
+        15.0,
+        5.0
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/default-60.json",
+      "svg": "presets/default-60.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "ISO 60%",
+      "slug": "iso-60",
+      "keys": 62,
+      "size_u": [
+        15.0,
+        5.0
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/iso-60.json",
+      "svg": "presets/iso-60.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "JD40",
+      "slug": "jd40",
+      "keys": 40,
+      "size_u": [
+        12.0,
+        4.0
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/jd40.json",
+      "svg": "presets/jd40.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "ErgoDox",
+      "slug": "ergodox",
+      "keys": 76,
+      "size_u": [
+        19.5,
+        7.48
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/ergodox.json",
+      "svg": "presets/ergodox.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "Atreus",
+      "slug": "atreus",
+      "keys": 42,
+      "size_u": [
+        12.47,
+        5.15
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/atreus.json",
+      "svg": "presets/atreus.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "Planck",
+      "slug": "planck",
+      "keys": 47,
+      "size_u": [
+        12.0,
+        4.0
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/planck.json",
+      "svg": "presets/planck.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "Kinesis Advantage",
+      "slug": "kinesis-advantage",
+      "keys": 86,
+      "size_u": [
+        18.18,
+        7.8
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/kinesis-advantage.json",
+      "svg": "presets/kinesis-advantage.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "Keycool 84",
+      "slug": "keycool-84",
+      "keys": 84,
+      "size_u": [
+        16.0,
+        6.0
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/keycool-84.json",
+      "svg": "presets/keycool-84.svg",
+      "note": ""
+    },
+    {
+      "group": "presets",
+      "name": "Leopold FC660m",
+      "slug": "leopold-fc660m",
+      "keys": 66,
+      "size_u": [
+        16.5,
+        5.0
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "presets/leopold-fc660m.json",
+      "svg": "presets/leopold-fc660m.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "Apple Wireless",
+      "slug": "apple-wireless",
+      "keys": 78,
+      "size_u": [
+        14.5,
+        5.86
+      ],
+      "backcolor": "#dbdbdb",
+      "author": "Alistair Calder",
+      "json": "samples/apple-wireless.json",
+      "svg": "samples/apple-wireless.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "GB: CCnG",
+      "slug": "gb-ccng",
+      "keys": 104,
+      "size_u": [
+        22.5,
+        6.5
+      ],
+      "backcolor": "#eeeeee",
+      "author": "",
+      "json": "samples/gb-ccng.json",
+      "svg": "samples/gb-ccng.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "GB: Retro DSA",
+      "slug": "gb-retro-dsa",
+      "keys": 104,
+      "size_u": [
+        22.5,
+        6.5
+      ],
+      "backcolor": "#222222",
+      "author": "",
+      "json": "samples/gb-retro-dsa.json",
+      "svg": "samples/gb-retro-dsa.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "Stealth Black",
+      "slug": "stealth-black",
+      "keys": 104,
+      "size_u": [
+        22.5,
+        6.5
+      ],
+      "backcolor": "#222222",
+      "author": "",
+      "json": "samples/stealth-black.json",
+      "svg": "samples/stealth-black.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "Televideo TS-800a",
+      "slug": "televideo-ts-800a",
+      "keys": 101,
+      "size_u": [
+        19.75,
+        6.0
+      ],
+      "backcolor": "#151A21",
+      "author": "",
+      "json": "samples/televideo-ts-800a.json",
+      "svg": "samples/televideo-ts-800a.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "Symbolics PN 364000",
+      "slug": "symbolics-364000",
+      "keys": 88,
+      "size_u": [
+        20.0,
+        6.0
+      ],
+      "backcolor": "#B1B1A3",
+      "author": "",
+      "json": "samples/symbolics-364000.json",
+      "svg": "samples/symbolics-364000.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "Symbolics SpaceCadet",
+      "slug": "symbolics-spacecadet",
+      "keys": 100,
+      "size_u": [
+        24.0,
+        6.0
+      ],
+      "backcolor": "#dbd3d3",
+      "author": "",
+      "json": "samples/symbolics-spacecadet.json",
+      "svg": "samples/symbolics-spacecadet.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "Commodore VIC-20",
+      "slug": "commodore-vic20",
+      "keys": 66,
+      "size_u": [
+        19.0,
+        5.0
+      ],
+      "backcolor": "#e8e1ca",
+      "author": "",
+      "json": "samples/commodore-vic20.json",
+      "svg": "samples/commodore-vic20.svg",
+      "note": ""
+    },
+    {
+      "group": "samples",
+      "name": "Programmer's Keyboard",
+      "slug": "programmers-keyboard",
+      "keys": 132,
+      "size_u": [
+        23.1,
+        12.3
+      ],
+      "backcolor": "#eeeeee",
+      "author": "Ian Douglas",
+      "json": "samples/programmers-keyboard.json",
+      "svg": "samples/programmers-keyboard.svg",
+      "note": ""
+    }
+  ]
+}

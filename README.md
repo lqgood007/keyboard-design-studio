@@ -15,6 +15,7 @@
 | 模块 | 能力 |
 |---|---|
 | **配列设计** | KLE 兼容编辑器：预设模板 / 点选编辑 / 导入导出 KLE raw JSON / Ergogen YAML 导入 |
+| **配列图库 47 款** | KLE 官方渲染风格（外框+Lab 提亮内框+12 槽位标签）：内置 26 款 + KLE 官方 presets/samples 21 款，卡片缩略图总览，搜索/分组，点击载入编辑器 |
 | **预设配列 26 款** | 常规 / 60% 家族 / 65%+ / 大配列 / 直列 / 人体工学 / ISO / 其他 八组 |
 | **键帽模型 13 款** | SA · OEM · Cherry · DSA · MT3 · DCS · DSS · G20 · HiPro · ASA · XDA · MDA · KAT，按 **KeyV2 开源源码**逐款复刻，参数化 3D 实时预览 + 可打印 STL |
 | **硬件生成** | 定位板 DXF（SwillKB 风格）、KiCad PCB（MX/二极管/Promicro + 矩阵网络）、外壳 STL（JSCAD，圆角/倒角/分层参数化）、zip 打包 |
@@ -67,8 +68,8 @@
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  前端（frontend/public，纯 HTML/JS/SVG，零构建）          │
-│  双标签页：配列设计 / 键帽模型                            │
-│  KLE 编辑器 · 26 款预设 · 属性步进 · 3D 键帽预览          │
+│  三标签页：配列设计 / 配列图库 / 键帽模型                 │
+│  KLE 编辑器 · 47 款图库 · 属性步进 · 3D 键帽预览          │
 └──────────────────────────┬──────────────────────────────┘
                            │ POST /api/generate {kle, options}
 ┌──────────────────────────▼──────────────────────────────┐
@@ -99,7 +100,7 @@
 ## 三、快速开始
 
 ```powershell
-# 前端 3D 依赖（three.js，clone 后首次运行需执行一次，生成 frontend/public/vendor/）
+# 前端 3D 依赖（three.js 已随仓库入库 frontend/public/vendor/；如需重新获取：
 powershell -ExecutionPolicy Bypass -File .\tools\fetch-vendor.ps1
 
 # 后端（Node >= 20）
