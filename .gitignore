@@ -1,0 +1,20 @@
+# 依赖与产物
+node_modules/
+output/
+venv/
+
+# 测试临时产物
+backend/test/_e2e_out/
+backend/test/_fp_check/
+backend/test/_unzip/
+backend/test/result.zip
+backend/test/_index.html
+backend/test/_app.js
+backend/test/_style.css
+backend/test/server*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+backend/server.*.log
+.tunnel.log*
