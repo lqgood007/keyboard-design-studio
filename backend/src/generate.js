@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const { generatePlateDxf } = require('./plateDxf');
 const { generateErgogen } = require('./ergogenPipeline');
-const { generateCaseStl } = require('./caseStl');
+const { generateCaseStl, generatePlateStl } = require('./caseStl');
 const { parseKle } = require('./kleToKeys');
 
 const OUTPUT_DIR = path.resolve(__dirname, '../output');
@@ -42,6 +42,15 @@ async function runGenerate(kleRaw, options = {}) {
     generateErgogen(kleRaw, options),
   ]);
   const caseStls = generateCaseStl(kleRaw, options);
+  // 中间板独立参数：前端 plateStl* 字段映射到 generatePlateStl
+  const plateStl = generatePlateStl(kleRaw, {
+    thickness: options.plateStlThickness ?? 1.5,
+    cutout: options.plateStlCutout ?? 14,
+    expand: options.plateStlExpand ?? 5,
+    cornerRadius: options.plateStlCorner ?? 2,
+    screwHoles: options.plateStlScrew !== false,
+    screwDia: options.plateStlScrewDia ?? 3.2,
+  });
 
   // 3. 写文件
   const files = {};
@@ -51,6 +60,7 @@ async function runGenerate(kleRaw, options = {}) {
   };
 
   write('plate.dxf', plateDxf);
+  write('plate.stl', plateStl);   // 中间板 3D 模型（可打印定位板）
   write('layout.kle.json', typeof kleRaw === 'string' ? kleRaw : JSON.stringify(kleRaw, null, 2));
 
   const outline = erg.outlines && erg.outlines.pcb_edge;
@@ -79,6 +89,10 @@ async function runGenerate(kleRaw, options = {}) {
     options: {
       expand: options.expand ?? 5,
       cutout: options.cutout ?? 14,
+      plateStlThickness: options.plateStlThickness ?? 1.5,
+      plateStlCutout: options.plateStlCutout ?? 14,
+      plateStlExpand: options.plateStlExpand ?? 5,
+      plateStlCorner: options.plateStlCorner ?? 2,
       controller: options.controller !== false,
       screwHoles: options.screwHoles !== false,
       screwDia: options.screwDia ?? 3.2,

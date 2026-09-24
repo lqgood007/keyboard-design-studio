@@ -4308,7 +4308,7 @@ async function generate() {
     a.remove();
     URL.revokeObjectURL(url);
     const lm = $('o-layer').value || 'single';
-    setStatus('✅ 生成成功，zip 已下载（plate.dxf / main.kicad_pcb / case.stl' + (lm === 'split' ? ' + case_bottom.stl + case_plate.stl' : '') + ' 等）', 'ok');
+    setStatus('✅ 生成成功，zip 已下载（plate.dxf / plate.stl / main.kicad_pcb / case.stl' + (lm === 'split' ? ' + case_bottom.stl + case_plate.stl' : '') + ' 等）', 'ok');
     showReport(rows.length, options);
   } catch (e) {
     setStatus('生成失败: ' + e.message, 'err');
@@ -4329,6 +4329,12 @@ function collectOptions() {
     cornerRadius: +$('o-corner').value || 0,
     chamfer: +$('o-chamfer').value || 0,
     layerMode: $('o-layer').value || 'single',
+    plateStlThickness: +$('o-pst-thick').value || 1.5,
+    plateStlCutout: +$('o-pst-cutout').value || 14,
+    plateStlExpand: +$('o-pst-expand').value || 5,
+    plateStlCorner: +$('o-pst-corner').value ?? 2,
+    plateStlScrew: $('o-pst-screw').checked,
+    plateStlScrewDia: +$('o-pst-screw-dia').value || 3.2,
   };
 }
 

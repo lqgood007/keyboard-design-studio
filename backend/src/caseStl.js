@@ -211,4 +211,71 @@ function generateCaseStl(raw, opts = {}) {
   };
 }
 
-module.exports = { generateCaseStl };
+/**
+ * 中间板（定位板）STL：板框挤出 + 键切孔（旋转跟随）+ 可选螺丝孔
+ * 独立可调尺寸：thickness / cutout / expand / cornerRadius / screwHoles
+ * @param {Array|Object|string} raw - KLE raw data
+ * @param {Object} opts
+ *   thickness  板厚 mm（默认 1.5）
+ *   cutout     键切孔边长 mm（默认 14）
+ *   expand     板框外扩 mm（默认 5）
+ *   cornerRadius 板框四角圆角 mm（默认 2）
+ *   screwHoles 四角螺丝孔（默认 true）
+ *   screwDia   螺丝孔径 mm（默认 3.2）
+ *   screwInset 螺丝孔距边 mm（默认 6）
+ * @returns {string} ASCII STL
+ */
+function generatePlateStl(raw, opts = {}) {
+  const { keys } = parseKle(raw);
+  const thickness = opts.thickness ?? 1.5;
+  const cutout = opts.cutout ?? 14;
+  const expand = opts.expand ?? 5;
+  const cornerRadius = opts.cornerRadius ?? 2;
+  const screwHoles = opts.screwHoles !== false;
+  const screwDia = opts.screwDia ?? 3.2;
+  const screwInset = opts.screwInset ?? 6;
+
+  const bounds = keysBounds(keys);
+  const w = bounds.maxX - bounds.minX + expand * 2;
+  const h = bounds.maxY - bounds.minY + expand * 2;
+  const cx = (bounds.minX + bounds.maxX) / 2;
+  const cy = (bounds.minY + bounds.maxY) / 2;
+
+  // 板框（圆角可选）
+  const base = cornerRadius > 1e-6
+    ? primitives.roundedRectangle({ size: [w, h], roundRadius: cornerRadius })
+    : primitives.rectangle({ size: [w, h] });
+  let geom = extrusions.extrudeLinear({ height: thickness }, base);
+
+  // 键切孔（垂直贯穿，旋转键跟随）+ 螺丝孔：先 union 成单个减体，一次 subtract
+  // （避免多次 subtract 在底面圆孔环处产生 T 形交点/边界边）
+  const allHoles = keys.map((k) => {
+    const rot = (k.rot || 0) * Math.PI / 180;
+    let hole = extrusions.extrudeLinear({ height: thickness + 1 },
+      primitives.rectangle({ size: [cutout, cutout] }));
+    if (rot !== 0) hole = transforms.rotate([0, 0, rot], hole);
+    return transforms.translate([k.cx - cx, k.cy - cy, -0.01], hole);
+  });
+  if (screwHoles && screwDia > 0) {
+    // 圆角方孔（4.5×4.5 / r0.5，可穿 M3）：与键孔同为方孔类几何，
+    // 避免 jscad 在多批贯穿孔中对圆柱孔底面缝合失败（12 条边界边）
+    const side = screwDia * 1.4;
+    const positions = [
+      [-w / 2 + screwInset, -h / 2 + screwInset],
+      [w / 2 - screwInset, -h / 2 + screwInset],
+      [-w / 2 + screwInset, h / 2 - screwInset],
+      [w / 2 - screwInset, h / 2 - screwInset],
+    ];
+    for (const [x, y] of positions) {
+      const sq = extrusions.extrudeLinear({ height: thickness + 1 },
+        primitives.roundedRectangle({ size: [side, side], roundRadius: Math.min(0.5, screwDia * 0.15) }));
+      allHoles.push(transforms.translate([x, y, -0.5], sq));
+    }
+  }
+  geom = booleans.subtract(geom, booleans.union(...allHoles));
+
+  const stl = stlSerializer.serialize({ binary: false }, geom);
+  return Array.isArray(stl) ? stl.join('\n') : String(stl);
+}
+
+module.exports = { generateCaseStl, generatePlateStl };
