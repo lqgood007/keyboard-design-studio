@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>键盘配列设计器 · KLE + SwillKB + Ergogen</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>⌨ 键盘配列设计器</h1>
+  <span class="sub">KLE 格式 · 定位板 DXF · KiCad PCB · 外壳 STL</span>
+</header>
+
+<nav class="tabs">
+  <button type="button" class="tab active" data-view="editor">⌨ 配列设计</button>
+  <button type="button" class="tab" data-view="keycap">🧢 键帽模型</button>
+</nav>
+
+<div id="view-editor">
+<main class="layout">
+  <!-- 左：工具栏 + 属性 -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h3>预设配列（26 款）</h3>
+      <div class="presets" id="preset-list"></div>
+    </section>
+
+    <section class="panel">
+      <h3>编辑</h3>
+      <div class="btn-row">
+        <button id="btn-add-row">＋ 加一行</button>
+        <button id="btn-add-key">＋ 加键</button>
+        <button id="btn-del-key">－ 删选中</button>
+      </div>
+      <p class="tip">点击键选中；方向键微调位置（0.25u）</p>
+    </section>
+
+    <section class="panel" id="prop-panel">
+      <h3>选中键属性 <span id="prop-idx"></span></h3>
+      <div class="props">
+        <label>X
+          <span class="stepper">
+            <button type="button" class="step-btn step-minus" data-field="x" title="向左 0.25u">−</button>
+            <input type="number" id="p-x" step="0.25">
+            <button type="button" class="step-btn step-plus" data-field="x" title="向右 0.25u">＋</button>
+          </span>
+        </label>
+        <label>Y
+          <span class="stepper">
+            <button type="button" class="step-btn step-minus" data-field="y" title="向上 0.25u">−</button>
+            <input type="number" id="p-y" step="0.25">
+            <button type="button" class="step-btn step-plus" data-field="y" title="向下 0.25u">＋</button>
+          </span>
+        </label>
+        <label>宽 W
+          <span class="stepper">
+            <button type="button" class="step-btn step-minus" data-field="w" title="减小 0.25u">−</button>
+            <input type="number" id="p-w" step="0.25" min="0.25" list="dl-w">
+            <button type="button" class="step-btn step-plus" data-field="w" title="增大 0.25u">＋</button>
+          </span>
+        </label>
+        <label>高 H
+          <span class="stepper">
+            <button type="button" class="step-btn step-minus" data-field="h" title="减小 0.25u">−</button>
+            <input type="number" id="p-h" step="0.25" min="0.25" list="dl-h">
+            <button type="button" class="step-btn step-plus" data-field="h" title="增大 0.25u">＋</button>
+          </span>
+        </label>
+        <label>旋转 R
+          <span class="stepper">
+            <button type="button" class="step-btn step-minus" data-field="r" title="逆时针 5°">−</button>
+            <input type="number" id="p-r" step="5" list="dl-r">
+            <button type="button" class="step-btn step-plus" data-field="r" title="顺时针 5°">＋</button>
+          </span>
+        </label>
+        <label>标签 <input type="text" id="p-label"></label>
+      </div>
+      <datalist id="dl-w">
+        <option value="1"></option><option value="1.25"></option><option value="1.5"></option>
+        <option value="1.75"></option><option value="2"></option><option value="2.25"></option>
+        <option value="2.5"></option><option value="2.75"></option><option value="3"></option>
+        <option value="4"></option><option value="6.25"></option><option value="6.5"></option>
+      </datalist>
+      <datalist id="dl-h">
+        <option value="1"></option><option value="1.25"></option><option value="1.5"></option><option value="2"></option>
+      </datalist>
+      <datalist id="dl-r">
+        <option value="0"></option><option value="5"></option><option value="15"></option><option value="30"></option>
+        <option value="45"></option><option value="60"></option><option value="90"></option>
+      </datalist>
+    </section>
+
+    <section class="panel">
+      <h3>生成参数</h3>
+      <div class="props">
+        <label>切孔(mm) <input type="number" id="o-cutout" value="14" min="10" max="18"></label>
+        <label>外扩(mm) <input type="number" id="o-expand" value="5" min="1" max="20"></label>
+        <label>底板厚(mm) <input type="number" id="o-bottom" value="3" min="1"></label>
+        <label>面板厚(mm) <input type="number" id="o-plate" value="1.5" min="0.5"></label>
+        <label class="chk"><input type="checkbox" id="o-controller" checked> 放置主控 (Promicro)</label>
+        <label class="chk"><input type="checkbox" id="o-screw" checked> 四角螺丝孔</label>
+        <label>螺丝孔径(mm) <input type="number" id="o-screw-dia" value="3.2" min="1" max="8"></label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>数据</h3>
+      <div class="btn-row">
+        <button id="btn-copy-json">复制 KLE JSON</button>
+        <button id="btn-paste-json">粘贴导入</button>
+      </div>
+      <div class="btn-row">
+        <button id="btn-share">🔗 生成分享链接</button>
+        <button id="btn-3d">🧊 3D 预览</button>
+      </div>
+      <label class="chk" title="在右侧编辑区输入 Ergogen YAML 配置并点「导入 YAML」">
+        <input type="checkbox" id="yaml-mode"> YAML 模式（Ergogen 配置导入）
+      </label>
+      <button id="btn-yaml-import" style="display:none">导入 YAML</button>
+      <button id="btn-generate" class="primary">⚡ 生成硬件文件</button>
+      <div id="status"></div>
+    </section>
+  </aside>
+
+  <!-- 中：画布 -->
+  <section class="canvas-wrap">
+    <svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="empty-hint">从左侧选择一个预设，或点「粘贴导入」加载 KLE 数据</div>
+  </section>
+
+  <!-- 右：JSON 与报告 -->
+  <aside class="json-panel">
+    <h3>KLE Raw JSON <button id="btn-refresh-json">⇄ 刷新</button></h3>
+    <textarea id="json-area" spellcheck="false" placeholder='[["Esc","1","2",...]]'></textarea>
+    <div id="report"></div>
+  </aside>
+</main>
+</div>
+
+<!-- 键帽模型面板（顶部标签页） -->
+<section id="view-keycap" class="keycap-panel" hidden>
+  <div class="kc-grid">
+    <div class="panel kc-gen">
+      <h3>键帽三维模型生成器</h3>
+      <div class="kc-form">
+        <label>Profile
+          <select id="kc-p-profile"></select>
+        </label>
+        <label>行（高度档）
+          <select id="kc-p-row">
+            <option value="R1">R1（数字/F区）</option>
+            <option value="R2" selected>R2（QWERTY）</option>
+            <option value="R3">R3（ASDF）</option>
+            <option value="R4">R4（ZXCV/底行）</option>
+          </select>
+        </label>
+        <label>宽度（u）
+          <select id="kc-p-width"></select>
+        </label>
+        <label>顶面形态
+          <select id="kc-p-dish">
+            <option value="auto" selected>自动（按 Profile）</option>
+            <option value="cylindrical">圆柱凹（OEM/Cherry 风格）</option>
+            <option value="spherical">球形凹（SA/DSA 风格）</option>
+            <option value="flat">平面（XDA 风格）</option>
+            <option value="dome">球形凸出（隆起）</option>
+          </select>
+        </label>
+        <label>边缘圆角
+          <select id="kc-p-corner">
+            <option value="auto" selected>自动（按 Profile）</option>
+            <option value="0">直角</option>
+            <option value="0.5">小圆角 0.5</option>
+            <option value="1">圆角 1.0（标准）</option>
+            <option value="1.5">大圆角 1.5</option>
+          </select>
+        </label>
+      </div>
+      <div id="kc-params" class="kc-params"></div>
+      <div class="kc-actions">
+        <button id="kc-download-stl" class="primary">⬇ 下载 STL（可打印）</button>
+        <button id="kc-reset-view">重置视角</button>
+      </div>
+      <div class="kc-3dwrap">
+        <canvas id="kc-canvas" width="420" height="300"></canvas>
+      </div>
+      <p class="tip">拖拽旋转 · 滚轮缩放；圆角/形态/几何与后端 /api/keycap-stl 完全一致</p>
+    </div>
+
+    <div class="panel kc-table">
+      <h3>键帽类型统计（13 款 Profile）</h3>
+      <table id="kc-stats-table"></table>
+    </div>
+
+    <div class="panel kc-table">
+      <h3>尺寸规格（mm）</h3>
+      <table id="kc-spec-table"></table>
+      <p class="tip">KeyV2 源码参数：底面按各 Profile 实测（18.0~18.6mm）· 顶面 = 底面 − width/height 差值 · 键距 19.05mm</p>
+    </div>
+
+    <div class="panel kc-table">
+      <h3>材质 / 工艺</h3>
+      <table id="kc-mat-table"></table>
+    </div>
+  </div>
+</section>
+
+<!-- 3D 预览模态框 -->
+<div id="preview-modal" class="modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>外壳 / 定位板 3D 预览（拖拽旋转，滚轮缩放）</span>
+      <span class="modal-ctrl">
+        <label>键帽
+          <select id="kc-profile"></select>
+        </label>
+        <label class="chk"><input type="checkbox" id="kc-show" checked> 显示</label>
+        <button id="btn-close-3d">✕</button>
+      </span>
+    </div>
+    <div id="preview-canvas"></div>
+  </div>
+</div>
+
+<script src="js/keycap.js"></script>
+<script src="js/keycapGeo.js"></script>
+<script src="js/app.js"></script>
+<script type="module" src="js/keycapPanel.js"></script>
+<script type="module" src="js/preview.js"></script>
+</body>
+</html>

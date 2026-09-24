@@ -1,0 +1,119 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #222; }
+
+.topbar { background: #1e2a3a; color: #fff; padding: 12px 20px; display: flex; align-items: baseline; gap: 14px; }
+.topbar h1 { font-size: 18px; }
+.topbar .sub { font-size: 12px; opacity: 0.7; }
+
+.layout { display: grid; grid-template-columns: 260px 1fr 340px; gap: 12px; padding: 12px; height: calc(100vh - 52px); }
+
+.sidebar, .json-panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.panel { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.panel h3 { font-size: 13px; margin-bottom: 8px; color: #1e2a3a; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.preset-group { width: 100%; margin: 6px 0 2px; font-size: 11px; color: #64748b; font-weight: 600; letter-spacing: .05em; }
+.preset-group:first-child { margin-top: 0; }
+.modal-ctrl { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.modal-ctrl select { padding: 3px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
+button { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; cursor: pointer; font-size: 12px; transition: .15s; }
+button:hover { background: #eef2ff; border-color: #6366f1; }
+button.primary { background: #4f46e5; border-color: #4f46e5; color: #fff; width: 100%; padding: 10px; font-size: 14px; }
+button.primary:hover { background: #4338ca; }
+.btn-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.tip { font-size: 11px; color: #777; margin-top: 8px; }
+
+.props { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.props label { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+.props input { width: 110px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
+
+.canvas-wrap { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow: auto; position: relative; }
+#canvas { width: 100%; height: 100%; display: block; }
+#empty-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: #aaa; font-size: 14px; pointer-events: none; }
+
+.key-rect { stroke: #94a3b8; stroke-width: 1.5; }
+.key-rect.selected { stroke: #4f46e5; stroke-width: 2.5; filter: drop-shadow(0 0 3px rgba(79,70,229,.5)); }
+.key-label { font-size: 10px; fill: #334155; user-select: none; pointer-events: none; }
+
+.json-panel h3 { font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+#json-area { flex: 1; width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-family: Consolas, monospace; font-size: 11px; resize: none; }
+#report { font-size: 12px; }
+#report .ok { color: #15803d; }
+#report .err { color: #dc2626; }
+#report table { border-collapse: collapse; margin-top: 6px; width: 100%; }
+#report td, #report th { border: 1px solid #e2e8f0; padding: 3px 6px; text-align: left; font-size: 11px; }
+
+#status { margin-top: 8px; font-size: 12px; min-height: 16px; }
+#status.ok { color: #15803d; }
+#status.err { color: #dc2626; }
+
+/* 3D 预览模态框 */
+.modal {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 23, 42, 0.6);
+}
+.modal-box {
+  width: min(880px, 92vw); height: min(600px, 86vh);
+  background: #fff; border-radius: 12px; box-shadow: 0 20px 60px rgba(2, 6, 23, 0.35);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid #e2e8f0;
+  font-weight: 600; color: #0f172a;
+}
+.modal-head button {
+  border: none; background: transparent; font-size: 16px; cursor: pointer; color: #64748b;
+}
+.modal-head button:hover { color: #0f172a; }
+#preview-canvas { flex: 1; position: relative; }
+#preview-canvas canvas { display: block; }
+.chk { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.btn-row { margin: 6px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* 步进控件（− 数值 ＋） */
+.stepper {
+  display: inline-flex; align-items: stretch; gap: 0;
+  border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden;
+  background: #fff;
+}
+.stepper input {
+  width: 64px; text-align: center; border: none; outline: none;
+  padding: 4px 2px; font-size: 13px; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;
+  -moz-appearance: textfield; appearance: textfield;
+}
+.stepper input::-webkit-outer-spin-button,
+.stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.step-btn {
+  border: none; background: #f1f5f9; color: #334155; cursor: pointer;
+  width: 24px; font-size: 13px; line-height: 1; padding: 0; user-select: none;
+}
+.step-btn:hover { background: #e2e8f0; }
+.step-btn:active { background: #cbd5e1; }
+
+/* ========== 顶部标签页 ========== */
+.tabs { display: flex; gap: 4px; padding: 8px 12px 0; background: #f5f6fa; }
+.tab { padding: 8px 18px; border: 1px solid #cbd5e1; border-bottom: none; border-radius: 8px 8px 0 0; background: #eef1f6; cursor: pointer; font-size: 13px; color: #475569; }
+.tab:hover { background: #e2e8f0; }
+.tab.active { background: #fff; color: #4f46e5; font-weight: 600; }
+
+/* ========== 键帽模型面板 ========== */
+.keycap-panel { padding: 12px; }
+.kc-grid { display: grid; grid-template-columns: 460px 1fr; gap: 12px; align-items: start; }
+.kc-grid .kc-table { overflow-x: auto; }
+.kc-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.kc-form label { font-size: 12px; color: #475569; }
+.kc-form select { margin-left: 6px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; min-width: 150px; }
+.kc-params { margin: 8px 0; }
+.kc-params table { border-collapse: collapse; width: 100%; }
+.kc-params td, .kc-params th { border: 1px solid #e2e8f0; padding: 4px 8px; font-size: 12px; text-align: left; }
+.kc-actions { display: flex; gap: 8px; margin: 10px 0; }
+.kc-3dwrap { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: linear-gradient(180deg,#f8fafc,#eef2ff); }
+#kc-canvas { display: block; width: 100%; height: 300px; cursor: grab; }
+#kc-canvas:active { cursor: grabbing; }
+.kc-table table { border-collapse: collapse; width: 100%; }
+.kc-table th, .kc-table td { border: 1px solid #e2e8f0; padding: 4px 8px; font-size: 12px; text-align: left; }
+.kc-table th { background: #f8fafc; }
+.kc-table tr:nth-child(even) td { background: #fafbfd; }
