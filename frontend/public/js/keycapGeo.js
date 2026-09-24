@@ -96,7 +96,7 @@ function keycapGeo(p, opts = {}) {
   const corner = opts.corner != null ? opts.corner : (p.corner != null ? p.corner : 1);
   const depth = opts.depth != null ? opts.depth : (p.dishDepth != null ? p.dishDepth : 0.8);
   const slices = opts.slices != null ? opts.slices : (p.slices || 1);
-  const seg = opts.seg || 6;
+  const seg = opts.seg || 10;   // 每边/角采样段数：10 段/角 → 四角圆弧平滑，无折线棱
   const edgeR = opts.edgeRadius != null ? opts.edgeRadius : 0; // 顶面边缘圆角（mm）
 
   const baseW = p.baseW, baseD = p.baseD, topW = p.topW, topD = p.topD;
@@ -174,7 +174,8 @@ function keycapGeo(p, opts = {}) {
     // 壁面斜率（半宽对 prog）：dw/dprog = -diff + sideSculpt·(1-2·prog)
     const sW = (-widthDiff + sideSculpt * (1 - 2 * lastLin)) * fe / 2; // 半宽对 t 起点斜率
     const sD = (-heightDiff + sideSculpt * (1 - 2 * lastLin)) * fe / 2;
-    for (let i = 0; i <= subLayers; i++) {
+    for (let i = 1; i <= subLayers; i++) {
+      // i 从 1 起：i=0 的环与线性段 lastLin 层完全重合，会产生零面积退化面
       const t = i / subLayers;                       // 0..1
       const t2 = t * t, t3 = t2 * t;
       const h00 = 2 * t3 - 3 * t2 + 1;               // Hermite 基函数

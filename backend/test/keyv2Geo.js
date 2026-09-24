@@ -38,8 +38,8 @@ for (const pid of Object.keys(KEYCAP_PROFILES)) {
     //   负角（R1 数字行）= 前低后高（Back 高，远离打字员翘起）；正角（R4 底行）= 前高后低（Front 高，向打字员翘起）
     const flatGeo = keycapGeo(p, { dish: 'flat' });
     let zMin = Infinity, zMax = -Infinity, yAtZMin = 0, yAtZMax = 0;
-    for (let i = 0; i < 48; i++) {
-      const v = flatGeo.vertices[flatGeo.vertices.length - 2 - 48 + i];
+    for (let i = 0; i < 80; i++) {   // 每环点数 = 8·seg = 8·10（seg 默认 10）
+      const v = flatGeo.vertices[flatGeo.vertices.length - 2 - 80 + i];
       if (v[2] < zMin) { zMin = v[2]; yAtZMin = v[1]; }
       if (v[2] > zMax) { zMax = v[2]; yAtZMax = v[1]; }
     }
