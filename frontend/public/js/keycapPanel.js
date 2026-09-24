@@ -237,7 +237,10 @@ function downloadStl() {
     .then((blob) => {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `keycap_${pid}_${row}_${w}u_${o.dish}.stl`;
+      // 文件名带时间戳 + 顶面圆角，避免同名文件反复下载混淆（旧版文件名相同导致 (1)(2)(3)…）
+      const ts = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+      const eR = o.edgeRadius ? `_e${o.edgeRadius}` : '';
+      a.download = `keycap_${pid}_${row}_${w}u_${o.dish}${eR}_${ts}.stl`;
       document.body.appendChild(a);
       a.click();
       a.remove();
