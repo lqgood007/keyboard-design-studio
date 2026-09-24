@@ -23,7 +23,12 @@
   <aside class="sidebar">
     <section class="panel">
       <h3>预设配列（26 款）</h3>
+      <div class="btn-row preset-tools">
+        <button id="btn-save-preset" title="把当前画布保存为当前预设（本地持久化）">💾 保存当前</button>
+        <button id="btn-reset-presets" title="清空所有本地自定义，恢复出厂 26 款预设">♻ 重置所有</button>
+      </div>
       <div class="presets" id="preset-list"></div>
+      <p class="tip" id="preset-dirty-hint" style="display:none"></p>
     </section>
 
     <section class="panel">
@@ -101,6 +106,14 @@
         <label class="chk"><input type="checkbox" id="o-controller" checked> 放置主控 (Promicro)</label>
         <label class="chk"><input type="checkbox" id="o-screw" checked> 四角螺丝孔</label>
         <label>螺丝孔径(mm) <input type="number" id="o-screw-dia" value="3.2" min="1" max="8"></label>
+        <label>四角圆角(mm) <input type="number" id="o-corner" value="0" min="0" max="10" step="0.5" title="外壳四角圆角半径，0=直角"></label>
+        <label>面板倒角(mm) <input type="number" id="o-chamfer" value="0" min="0" max="5" step="0.5" title="面板上缘倒角宽度，0=直角"></label>
+        <label>分层打印
+          <select id="o-layer">
+            <option value="single">单件（合并 STL）</option>
+            <option value="split">分层（底板+面板分件）</option>
+          </select>
+        </label>
       </div>
     </section>
 

@@ -41,7 +41,7 @@ async function runGenerate(kleRaw, options = {}) {
   const [erg] = await Promise.all([
     generateErgogen(kleRaw, options),
   ]);
-  const caseStl = generateCaseStl(kleRaw, options);
+  const caseStls = generateCaseStl(kleRaw, options);
 
   // 3. 写文件
   const files = {};
@@ -63,7 +63,11 @@ async function runGenerate(kleRaw, options = {}) {
   for (const [name, c] of Object.entries(erg.cases || {})) {
     if (c.jscad) write(`case_${name}.jscad`, c.jscad);
   }
-  write('case.stl', caseStl);
+  write('case.stl', caseStls.case);
+  if (caseStls.layerMode === 'split') {
+    write('case_bottom.stl', caseStls.bottom);
+    write('case_plate.stl', caseStls.plate);
+  }
 
   // 4. 生成报告
   const matrixInfo = erg.matrix ? summarizeMatrix(erg.matrix) : {};
@@ -78,6 +82,9 @@ async function runGenerate(kleRaw, options = {}) {
       controller: options.controller !== false,
       screwHoles: options.screwHoles !== false,
       screwDia: options.screwDia ?? 3.2,
+      cornerRadius: options.cornerRadius ?? 0,
+      chamfer: options.chamfer ?? 0,
+      layerMode: options.layerMode ?? 'single',
     },
     bounds: { mm: plateBounds(keys) },
     files: Object.fromEntries(Object.entries(files).map(([k, v]) => [k, `${v} B`])),

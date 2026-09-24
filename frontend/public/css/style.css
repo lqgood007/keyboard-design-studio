@@ -117,3 +117,12 @@ button.primary:hover { background: #4338ca; }
 .kc-table th, .kc-table td { border: 1px solid #e2e8f0; padding: 4px 8px; font-size: 12px; text-align: left; }
 .kc-table th { background: #f8fafc; }
 .kc-table tr:nth-child(even) td { background: #fafbfd; }
+
+/* 预设：本地自定义与当前选中标记 */
+.preset-tools { margin-bottom: 8px; }
+.preset-tools button { flex: 1; font-size: 12px; }
+button.preset-modified { border-color: #f59e0b; color: #b45309; background: #fffbeb; }
+button.preset-modified:hover { background: #fef3c7; }
+button.preset-active { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+button.preset-active:hover { background: #4338ca; }
+#preset-dirty-hint { color: #b45309; font-size: 11px; }

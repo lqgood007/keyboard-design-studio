@@ -17,7 +17,7 @@
 | **配列设计** | KLE 兼容编辑器：预设模板 / 点选编辑 / 导入导出 KLE raw JSON / Ergogen YAML 导入 |
 | **预设配列 26 款** | 常规 / 60% 家族 / 65%+ / 大配列 / 直列 / 人体工学 / ISO / 其他 八组 |
 | **键帽模型 13 款** | SA · OEM · Cherry · DSA · MT3 · DCS · DSS · G20 · HiPro · ASA · XDA · MDA · KAT，按 **KeyV2 开源源码**逐款复刻，参数化 3D 实时预览 + 可打印 STL |
-| **硬件生成** | 定位板 DXF（SwillKB 风格）、KiCad PCB（MX/二极管/Promicro + 矩阵网络）、外壳 STL（JSCAD）、zip 打包 |
+| **硬件生成** | 定位板 DXF（SwillKB 风格）、KiCad PCB（MX/二极管/Promicro + 矩阵网络）、外壳 STL（JSCAD，圆角/倒角/分层参数化）、zip 打包 |
 | **属性编辑** | − 数值 ＋ 步进控件（0.25u 步进 / 5° 旋转，按住连发）、常用值下拉、方向键微调 |
 | **远程访问** | `start-keyboard.ps1` 一键启动服务 + 公网隧道并打印 URL |
 
@@ -150,7 +150,8 @@ powershell -ExecutionPolicy Bypass -File .\start-keyboard.ps1 -ServiceOnly   # �
    「键帽模型」含 **13 款 Profile** 统计表、尺寸规格表、材质/工艺表，以及参数化三维生成器
    （选 Profile/行/宽度/顶面形态/边缘圆角 → 3D 实时预览 → 下载可打印 STL；
    形态=自动·圆柱凹·球形凹·平面·球形凸出，圆角 0/0.5/1/1.5mm）
-4. **调参数**：切孔尺寸（MX 默认 14mm）、板框外扩、底板/面板厚度、主控开关、四角螺丝孔/孔径
+4. **调参数**：切孔尺寸（MX 默认 14mm）、板框外扩、底板/面板厚度、主控开关、四角螺丝孔/孔径、
+   外壳四角圆角（0–10mm）、面板上缘倒角（0–5mm）、分层打印（单件合并 / 底板+面板分件）
 5. **3D 预览**：外壳 STL 实时生成 → three.js 网页内渲染（拖拽旋转 / 滚轮缩放）；
    可切换键帽 Profile，键帽按行高/倾角/尺寸参数化建模并落在对应按键上方
 6. **分享**：生成分享链接（URL 携带 KLE 数据），任何人打开即加载同一配列
@@ -161,7 +162,8 @@ powershell -ExecutionPolicy Bypass -File .\start-keyboard.ps1 -ServiceOnly   # �
 | `plate.dxf` | 定位板（SwillKB 风格切孔 + 四角螺丝孔） | 激光切割 / 送厂 |
 | `main.kicad_pcb` | KiCad 5 格式 PCB 工程（MX/二极管/Promicro 主控 + 矩阵网络） | KiCad 打开，补布线 |
 | `pcb_edge.dxf/svg` | PCB 轮廓（Ergogen hull+expand） | 板框参考 |
-| `case.stl` | 外壳 STL（底板+带孔面板+螺丝通孔） | 3D 打印 |
+| `case.stl` | 外壳 STL（底板+带孔面板+螺丝通孔；`cornerRadius` 圆角 / `chamfer` 上缘倒角参数化） | 3D 打印 |
+| `case_bottom.stl` / `case_plate.stl` | 分层打印分件（`layerMode:'split'` 时输出，底板/面板独立 STL） | 分色/分件打印 |
 | `case_case.jscad` | 外壳 JSCAD 脚本（Ergogen 生成） | JSCAD 二次编辑 |
 | `layout.kle.json` | 配列源数据 | 存档/分享 |
 | `report.json` | 生成报告（键数/矩阵/尺寸/文件） | 生产核对 |
@@ -186,9 +188,13 @@ powershell -ExecutionPolicy Bypass -File .\start-keyboard.ps1 -ServiceOnly   # �
 {
   "cutout": 14, "expand": 5,
   "bottomThickness": 3, "plateThickness": 1.5,
-  "controller": true, "screwHoles": true, "screwDia": 3.2
+  "controller": true, "screwHoles": true, "screwDia": 3.2,
+  "cornerRadius": 0, "chamfer": 0, "layerMode": "single"
 }
 ```
+
+> `cornerRadius`：外壳四角圆角半径 mm（0=直角，建议 1–5）；`chamfer`：面板上缘 45° 倒角宽度 mm（0=直角，建议 0.5–2）；
+> `layerMode`：`single` 只输出合并 `case.stl`，`split` 额外输出底板 `case_bottom.stl` 与面板 `case_plate.stl` 分件（分层打印）。
 
 ---
 
@@ -252,12 +258,14 @@ keyboard_design/
 - [x] Ergogen YAML 配置导入（代码式配列）
 - [x] 配列分享链接（URL 携带 KLE 数据）
 - [x] 属性步进控件（− 数值 ＋，常用值下拉，按住连发）
+- [x] 预设配列支持修改 / 保存 / 重置所有（localStorage 本地持久化 `kds_custom_presets_v1`）
+- [x] 外壳参数化（四角圆角、面板上缘倒角、分层打印分件 STL）
 - [x] 26 款预设配列（官方 8 款直灌零差异 + 手写款按 QMK 官方核对修正）
 - [x] 键帽规格库（13 Profile 按 KeyV2 源码复刻 + 圆角/Dish 参数化建模 + 可打印 STL 下载）
 - [x] 一键启动脚本（服务 + cloudflared 公网隧道）
 - [ ] 旋转键（r≠0）矩阵网络优化（当前按几何中心聚类）
 - [ ] RP2040/兼容主控封装、电池/充电管理
-- [ ] 外壳参数化（圆角、倒角、分层打印）
+- [x] ~~外壳参数化~~（已完成：圆角、倒角、分层打印）
 - [ ] PCB 原理图输出（.kicad_sch 含元件）
 - [ ] 在线协作编辑
 

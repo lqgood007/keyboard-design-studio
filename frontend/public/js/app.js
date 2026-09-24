@@ -220,9 +220,6 @@ const PRESETS = {
         "w": 1.75
       },
       "Shift",
-      {
-        "x": 0.25
-      },
       "Up"
     ],
     [
@@ -254,9 +251,6 @@ const PRESETS = {
         "w": 1.25
       },
       "Ctrl",
-      {
-        "x": 0.25
-      },
       "Left",
       "Down",
       "Right"
@@ -281,6 +275,9 @@ const PRESETS = {
         "w": 2
       },
       "Backspace",
+      {
+        "x": 0.25
+      },
       "Del"
     ],
     [
@@ -304,6 +301,9 @@ const PRESETS = {
         "w": 1.5
       },
       "\\",
+      {
+        "x": 0.25
+      },
       "PgUp"
     ],
     [
@@ -326,6 +326,9 @@ const PRESETS = {
         "w": 2.25
       },
       "Enter",
+      {
+        "x": 0.25
+      },
       "PgDn"
     ],
     [
@@ -442,7 +445,8 @@ const PRESETS = {
     ],
     [
       {
-        "x": 0.25
+        "x": 0.25,
+        "w": 1.5
       },
       "Tab",
       "Q",
@@ -474,7 +478,8 @@ const PRESETS = {
     ],
     [
       {
-        "x": 0.5
+        "x": 0.5,
+        "w": 1.75
       },
       "Caps",
       "A",
@@ -489,15 +494,12 @@ const PRESETS = {
       ";",
       "'",
       {
-        "w": 2
+        "w": 2.25
       },
       "Enter",
       {
-        "x": 0.25
+        "x": 3
       },
-      "",
-      "",
-      "",
       "4",
       "5",
       "6",
@@ -505,7 +507,8 @@ const PRESETS = {
     ],
     [
       {
-        "x": 0.5
+        "x": 0.5,
+        "w": 2.25
       },
       "Shift",
       "Z",
@@ -519,18 +522,23 @@ const PRESETS = {
       ".",
       "/",
       {
-        "w": 2
+        "w": 2.75
       },
       "Shift",
       {
-        "x": 0.25
+        "x": 0.75
       },
       "Up",
-      "",
-      "",
+      {
+        "x": 1.25
+      },
       "1",
       "2",
-      "3"
+      "3",
+      {
+        "h": 2
+      },
+      "Enter"
     ],
     [
       {
@@ -562,13 +570,11 @@ const PRESETS = {
         "w": 1.5
       },
       "Ctrl",
-      {
-        "x": 0.25
-      },
       "Left",
       "Down",
       "Right",
       {
+        "x": 0.25,
         "w": 2
       },
       "0",
@@ -1477,6 +1483,7 @@ const PRESETS = {
     ],
     [
       {
+        "x": 0.75,
         "w": 1.5
       },
       "Ctrl",
@@ -1499,10 +1506,7 @@ const PRESETS = {
       {
         "w": 1.5
       },
-      "Ctrl",
-      {
-        "w": 1.5
-      }
+      "Ctrl"
     ]
   ],
   "planck": [
@@ -1661,7 +1665,7 @@ const PRESETS = {
   ],
   "minivan": [
     [
-      "Esc",
+      "Tab",
       "Q",
       "W",
       "E",
@@ -1672,13 +1676,16 @@ const PRESETS = {
       "I",
       "O",
       "P",
-      "Backspace"
+      {
+        "w": 1.75
+      },
+      "Bksp"
     ],
     [
       {
         "w": 1.25
       },
-      "Tab",
+      "L1",
       "A",
       "S",
       "D",
@@ -1688,10 +1695,11 @@ const PRESETS = {
       "J",
       "K",
       "L",
+      ";",
       {
-        "w": 1.75
+        "w": 1.5
       },
-      "Enter"
+      "L1"
     ],
     [
       {
@@ -1708,40 +1716,41 @@ const PRESETS = {
       ",",
       ".",
       "/",
-      {
-        "w": 1.25
-      },
-      "Shift"
+      "L2"
     ],
     [
       {
-        "w": 1.5
+        "w": 1.25
       },
       "Ctrl",
       {
-        "w": 1.25
+        "w": 1.5
       },
-      "Super",
+      "L2",
       {
         "w": 1.25
       },
-      "Alt",
+      "GUI",
       {
         "w": 2.25
       },
-      "Space",
+      "Ent",
+      {
+        "w": 2
+      },
+      "Spc",
       {
         "w": 1.25
       },
       "Alt",
       {
-        "w": 1.25
-      },
-      "Super",
-      {
         "w": 1.5
       },
-      "Ctrl"
+      "Esc",
+      {
+        "w": 1.75
+      },
+      "TG"
     ]
   ],
   "gherkin": [
@@ -1969,6 +1978,7 @@ const PRESETS = {
     ],
     [
       {
+        "x": 1.25,
         "w": 1.25
       },
       "Ctrl",
@@ -2756,295 +2766,677 @@ const PRESETS = {
   ],
   "corne": [
     [
+      {
+        "y": 0.3
+      },
+      "Tab",
       "Q",
+      {
+        "y": -0.2
+      },
       "W",
+      {
+        "y": -0.1
+      },
       "E",
+      {
+        "y": 0.1
+      },
       "R",
+      {
+        "y": 0.1
+      },
       "T",
-      "Y",
       {
         "x": 3
       },
+      "Y",
+      {
+        "y": -0.1
+      },
       "U",
+      {
+        "y": -0.1
+      },
       "I",
+      {
+        "y": 0.1
+      },
       "O",
+      {
+        "y": 0.2
+      },
       "P",
-      "[",
-      "]"
+      "Bksp"
     ],
     [
-      {
-        "x": 0.25
-      },
+      "Ctrl",
       "A",
+      {
+        "y": -0.2
+      },
       "S",
+      {
+        "y": -0.1
+      },
       "D",
+      {
+        "y": 0.1
+      },
       "F",
+      {
+        "y": 0.1
+      },
       "G",
+      {
+        "x": 3
+      },
       "H",
       {
-        "x": 2.75
+        "y": -0.1
       },
       "J",
+      {
+        "y": -0.1
+      },
       "K",
+      {
+        "y": 0.1
+      },
       "L",
+      {
+        "y": 0.2
+      },
       ";",
-      "'",
-      "#"
+      "'"
     ],
     [
-      {
-        "x": 0.5
-      },
+      "Shift",
       "Z",
+      {
+        "y": -0.2
+      },
       "X",
+      {
+        "y": -0.1
+      },
       "C",
+      {
+        "y": 0.1
+      },
       "V",
+      {
+        "y": 0.1
+      },
       "B",
+      {
+        "x": 3
+      },
       "N",
       {
-        "x": 2.5
+        "y": -0.1
       },
       "M",
+      {
+        "y": -0.1
+      },
       ",",
+      {
+        "y": 0.1
+      },
       ".",
+      {
+        "y": 0.2
+      },
       "/",
-      "\\",
-      "["
+      "Esc"
     ],
     [
       {
-        "x": 1.25,
-        "w": 1.5
+        "y": -0.1,
+        "x": 6,
+        "h": 1.5
       },
-      "Tab",
+      "GUI",
       {
-        "x": 0.5,
-        "w": 1.5
+        "x": 1,
+        "h": 1.5
       },
-      "Space",
+      "M1"
+    ],
+    [
       {
-        "x": 0.5,
-        "w": 1.5
+        "y": -1,
+        "x": 4
       },
-      "Enter",
+      "Spc",
+      "Ent",
       {
-        "x": 1.5,
-        "w": 1.5
+        "x": 3
       },
-      "Enter",
-      {
-        "x": 0.5,
-        "w": 1.5
-      },
-      "Space",
-      {
-        "x": 0.5,
-        "w": 1.5
-      },
-      "Tab"
+      "M2",
+      "Alt"
     ]
   ],
   "lily58": [
     [
-      "1",
+      {
+        "x": 3
+      },
+      "Esc",
+      {
+        "x": 8.5
+      },
+      "1"
+    ],
+    [
+      {
+        "y": -0.5
+      },
       "2",
+      {
+        "y": -0.125
+      },
       "3",
+      {
+        "y": -0.25
+      },
       "4",
+      {
+        "x": 1
+      },
       "5",
+      {
+        "y": 0.125
+      },
       "6",
       {
         "x": 4.5
       },
       "7",
+      {
+        "y": -0.125
+      },
       "8",
+      {
+        "x": 1
+      },
       "9",
+      {
+        "y": 0.25
+      },
       "0",
-      "-",
-      "="
+      {
+        "y": 0.125
+      },
+      "`"
     ],
     [
-      "Q",
+      {
+        "y": -0.5,
+        "x": 3
+      },
+      "Tab",
+      {
+        "x": 8.5
+      },
+      "Q"
+    ],
+    [
+      {
+        "y": -0.5
+      },
       "W",
+      {
+        "y": -0.125
+      },
       "E",
+      {
+        "y": -0.25
+      },
       "R",
+      {
+        "x": 1
+      },
       "T",
+      {
+        "y": 0.125
+      },
       "Y",
       {
         "x": 4.5
       },
       "U",
+      {
+        "y": -0.125
+      },
       "I",
+      {
+        "x": 1
+      },
       "O",
+      {
+        "y": 0.25
+      },
       "P",
-      "[",
-      "]"
+      {
+        "y": 0.125
+      },
+      "-"
     ],
     [
-      "A",
+      {
+        "y": -0.5,
+        "x": 3
+      },
+      "Ctrl",
+      {
+        "x": 8.5
+      },
+      "A"
+    ],
+    [
+      {
+        "y": -0.5
+      },
       "S",
+      {
+        "y": -0.125
+      },
       "D",
+      {
+        "y": -0.25
+      },
       "F",
+      {
+        "x": 1
+      },
       "G",
+      {
+        "y": 0.125
+      },
       "H",
+      {
+        "y": 0.5
+      },
+      "J",
+      {
+        "x": 2.5
+      },
+      "K",
+      {
+        "y": -0.5
+      },
+      "L",
+      {
+        "y": -0.125
+      },
+      ";",
+      {
+        "x": 1
+      },
+      "'",
+      {
+        "y": 0.25
+      },
+      "Shift",
+      {
+        "y": 0.125
+      },
+      "Z"
+    ],
+    [
+      {
+        "y": -0.5,
+        "x": 3
+      },
+      "X",
+      {
+        "x": 8.5
+      },
+      "C"
+    ],
+    [
+      {
+        "y": -0.5
+      },
+      "V",
+      {
+        "y": -0.125
+      },
+      "B",
+      {
+        "y": -0.25
+      },
+      "[",
+      {
+        "x": 1
+      },
+      "]",
+      {
+        "y": 0.125
+      },
+      "N",
       {
         "x": 4.5
       },
-      "J",
-      "K",
-      "L",
-      ";",
-      "'",
-      "#"
-    ],
-    [
-      "Z",
-      "X",
-      "C",
-      "V",
-      "B",
-      "N",
       "M",
       {
-        "x": 2.5
+        "y": -0.125
       },
       ",",
+      {
+        "x": 1
+      },
       ".",
+      {
+        "y": 0.25
+      },
       "/",
-      "\\",
-      "[",
-      "]",
-      "="
+      {
+        "y": 0.125
+      },
+      "Shift"
     ],
     [
       {
+        "y": -0.375,
         "x": 2.5
       },
-      "Ctrl",
       "Alt",
-      "Space",
-      "Space",
       {
-        "x": 2.5
+        "y": 0.025
       },
-      "Space",
-      "Alt",
-      "Ctrl",
-      "Space"
+      "GUI",
+      {
+        "y": 0.1
+      },
+      "Lo",
+      {
+        "x": 0.5,
+        "h": 1.5
+      },
+      "Spc",
+      {
+        "x": 2.5,
+        "h": 1.5
+      },
+      "Ent",
+      {
+        "x": 0.5
+      },
+      "Ra",
+      {
+        "y": -0.1
+      },
+      "Bksp",
+      "GUI"
     ]
   ],
   "sofle": [
     [
-      "1",
+      {
+        "x": 3
+      },
+      "`",
+      {
+        "x": 8.5
+      },
+      "1"
+    ],
+    [
+      {
+        "y": -0.5
+      },
       "2",
+      {
+        "y": -0.125
+      },
       "3",
+      {
+        "y": -0.25
+      },
       "4",
+      {
+        "x": 1
+      },
       "5",
+      {
+        "y": 0.125
+      },
       "6",
       {
         "x": 4.5
       },
       "7",
+      {
+        "y": -0.125
+      },
       "8",
+      {
+        "x": 1
+      },
       "9",
+      {
+        "y": 0.25
+      },
       "0",
-      "-",
-      "="
+      {
+        "y": 0.125
+      },
+      "`"
     ],
     [
-      "Q",
+      {
+        "y": -0.5,
+        "x": 3
+      },
+      "Esc",
+      {
+        "x": 8.5
+      },
+      "Q"
+    ],
+    [
+      {
+        "y": -0.5
+      },
       "W",
+      {
+        "y": -0.125
+      },
       "E",
+      {
+        "y": -0.25
+      },
       "R",
+      {
+        "x": 1
+      },
       "T",
+      {
+        "y": 0.125
+      },
       "Y",
       {
         "x": 4.5
       },
       "U",
+      {
+        "y": -0.125
+      },
       "I",
+      {
+        "x": 1
+      },
       "O",
+      {
+        "y": 0.25
+      },
       "P",
-      "[",
-      "]"
+      {
+        "y": 0.125
+      },
+      "Bksp"
     ],
     [
-      "A",
+      {
+        "y": -0.5,
+        "x": 3
+      },
+      "Tab",
+      {
+        "x": 8.5
+      },
+      "A"
+    ],
+    [
+      {
+        "y": -0.5
+      },
       "S",
+      {
+        "y": -0.125
+      },
       "D",
+      {
+        "y": -0.25
+      },
       "F",
+      {
+        "x": 1
+      },
       "G",
+      {
+        "y": 0.125
+      },
       "H",
       {
-        "x": 4.5
+        "y": 0.5
       },
       "J",
+      {
+        "x": 2.5
+      },
       "K",
+      {
+        "y": -0.5
+      },
       "L",
+      {
+        "y": -0.125
+      },
       ";",
+      {
+        "x": 1
+      },
       "'",
-      "#"
+      {
+        "y": 0.25
+      },
+      "Shift",
+      {
+        "y": 0.125
+      },
+      "Z"
     ],
     [
-      "Z",
+      {
+        "y": -0.5,
+        "x": 3
+      },
       "X",
-      "C",
+      {
+        "x": 8.5
+      },
+      "C"
+    ],
+    [
+      {
+        "y": -0.5
+      },
       "V",
+      {
+        "y": -0.125
+      },
       "B",
+      {
+        "y": -0.25
+      },
+      "Mute",
+      {
+        "x": 1
+      },
+      "X",
+      {
+        "y": 0.125
+      },
       "N",
       {
         "x": 4.5
       },
       "M",
+      {
+        "y": -0.125
+      },
       ",",
+      {
+        "x": 1
+      },
       ".",
+      {
+        "y": 0.25
+      },
       "/",
-      "\\",
-      "["
+      {
+        "y": 0.125
+      },
+      "Shift"
     ],
     [
       {
-        "x": 2,
-        "w": 1.5
+        "y": -0.125,
+        "x": 1.5
+      },
+      "GUI",
+      {
+        "y": -0.25
+      },
+      "Alt",
+      {
+        "y": 0.025
       },
       "Ctrl",
       {
-        "w": 1.5
+        "y": 0.1
       },
-      "Alt",
+      "Lo",
       {
-        "w": 2
+        "x": 0.5,
+        "h": 1.5
       },
-      "Space",
+      "Ent",
       {
-        "w": 1.5
+        "x": 2.5,
+        "h": 1.5
       },
-      "Alt",
+      "Spc",
       {
-        "w": 1.5
+        "x": 0.5
+      },
+      "Ra",
+      {
+        "y": -0.1
       },
       "Ctrl",
       {
-        "x": 3,
-        "w": 1.5
-      },
-      "Ctrl",
-      {
-        "w": 1.5
+        "y": -0.025
       },
       "Alt",
       {
-        "w": 2
+        "y": 0.25
       },
-      "Space",
-      {
-        "w": 1.5
-      },
-      "Alt",
-      {
-        "w": 1.5
-      },
-      "Ctrl"
+      "GUI"
     ]
   ],
   "65iso": [
@@ -3166,9 +3558,6 @@ const PRESETS = {
         "w": 1.25
       },
       "Ctrl",
-      {
-        "x": 0.25
-      },
       "Left",
       "Down",
       "Right"
@@ -3334,7 +3723,7 @@ const PRESETS = {
       },
       "Ctrl",
       {
-        "x": 0.25
+        "x": 0.75
       },
       "Up"
     ],
@@ -3492,6 +3881,11 @@ const PRESET_META = {
   }
 };
 
+
+
+
+
+
 /* ========== KLE raw 数组 → 键列表 ==========
  * 与 kle-serial 解析语义一致：
  *   - 字符串元素：1u 键，标签=字符串，继承前一个对象的属性
@@ -3617,6 +4011,7 @@ const state = {
   selected: -1,      // keys 索引
   scale: 42,         // px / u
   rows: [],          // 序列化后的 KLE 数组（用于导出/生成）
+  currentPreset: '', // 当前预设 id（用于保存/覆盖）
 };
 
 const $ = (id) => document.getElementById(id);
@@ -3778,7 +4173,96 @@ function refresh() {
 }
 
 /* ========== 导入导出 ========== */
+/* ========== 预设本地自定义（保存 / 重置所有） ========== */
+const LS_PRESETS_KEY = 'kds_custom_presets_v1';
+
+function getCustomPresets() {
+  try { return JSON.parse(localStorage.getItem(LS_PRESETS_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function saveCustomPresets(map) {
+  localStorage.setItem(LS_PRESETS_KEY, JSON.stringify(map));
+}
+
 function loadPreset(name) {
+  const custom = getCustomPresets();
+  const src = (custom[name] || PRESETS[name]);
+  if (!src) { setStatus('预设不存在: ' + name, 'err'); return; }
+  state.keys = flattenRows(JSON.parse(JSON.stringify(src)));
+  state.currentPreset = name;
+  state.selected = -1;
+  refresh();
+  renderPresetButtons();
+  const dirty = custom[name] ? '（已自定义，点击保存覆盖）' : '';
+  setStatus('已载入预设 ' + PRESET_META[name].name + dirty, 'ok');
+}
+
+/* 把当前画布保存为当前预设（本地持久化） */
+function savePreset() {
+  if (!state.currentPreset) { setStatus('请先点选一个预设再保存', 'err'); return; }
+  const rows = state.rows;
+  if (!rows.length) { setStatus('画布为空，无法保存', 'err'); return; }
+  const name = state.currentPreset;
+  const custom = getCustomPresets();
+  custom[name] = JSON.parse(JSON.stringify(rows));
+  saveCustomPresets(custom);
+  renderPresetButtons();
+  setStatus('已保存自定义预设：' + PRESET_META[name].name + '（本地）', 'ok');
+}
+
+/* 一键重置所有预设：清空本地自定义，恢复出厂 26 款 */
+function resetAllPresets() {
+  localStorage.removeItem(LS_PRESETS_KEY);
+  renderPresetButtons();
+  loadPreset('60');
+  setStatus('已重置所有预设（恢复出厂 26 款）', 'ok');
+}
+
+/* 渲染预设按钮（含已自定义标记） */
+function renderPresetButtons() {
+  const wrap = document.querySelector('.presets');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const custom = getCustomPresets();
+  const groups = [];
+  for (const id of Object.keys(PRESET_META)) {
+    const g = PRESET_META[id].group;
+    if (!groups.includes(g)) groups.push(g);
+  }
+  for (const g of groups) {
+    const title = document.createElement('div');
+    title.className = 'preset-group';
+    title.textContent = g;
+    wrap.appendChild(title);
+    for (const id of Object.keys(PRESET_META)) {
+      if (PRESET_META[id].group !== g) continue;
+      const b = document.createElement('button');
+      b.dataset.preset = id;
+      b.textContent = PRESET_META[id].name;
+      b.title = PRESET_META[id].name + '（' + id + '）';
+      if (custom[id]) { b.classList.add('preset-modified'); b.textContent += ' ✎'; }
+      if (id === state.currentPreset) b.classList.add('preset-active');
+      wrap.appendChild(b);
+    }
+  }
+  // 已自定义提示
+  const hint = document.getElementById('preset-dirty-hint');
+  if (hint) {
+    const n = Object.keys(custom).length;
+    if (n > 0) {
+      hint.style.display = 'block';
+      hint.textContent = n + ' 款预设已被本地自定义修改（✎）。可点击 ♻ 重置所有 恢复出厂。';
+    } else {
+      hint.style.display = 'none';
+    }
+  }
+  // 重新绑定
+  document.querySelectorAll('[data-preset]').forEach((b) => {
+    b.addEventListener('click', () => loadPreset(b.dataset.preset));
+  });
+}
+
+function loadPreset0(name) {
   state.keys = flattenRows(JSON.parse(JSON.stringify(PRESETS[name])));
   state.selected = -1;
   refresh();
@@ -3836,7 +4320,8 @@ async function generate() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    setStatus('✅ 生成成功，zip 已下载（plate.dxf / main.kicad_pcb / case.stl 等）', 'ok');
+    const lm = $('o-layer').value || 'single';
+    setStatus('✅ 生成成功，zip 已下载（plate.dxf / main.kicad_pcb / case.stl' + (lm === 'split' ? ' + case_bottom.stl + case_plate.stl' : '') + ' 等）', 'ok');
     showReport(rows.length, options);
   } catch (e) {
     setStatus('生成失败: ' + e.message, 'err');
@@ -3854,6 +4339,9 @@ function collectOptions() {
     controller: $('o-controller').checked,
     screwHoles: $('o-screw').checked,
     screwDia: +$('o-screw-dia').value || 3.2,
+    cornerRadius: +$('o-corner').value || 0,
+    chamfer: +$('o-chamfer').value || 0,
+    layerMode: $('o-layer').value || 'single',
   };
 }
 
@@ -4006,35 +4494,10 @@ function bindSteppers() {
 }
 
 /* ========== 事件绑定 ========== */
-/* 预设按钮：按 PRESET_META 分组动态生成 */
-(function buildPresetButtons() {
-  const wrap = document.querySelector('.presets');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  const groups = [];
-  for (const id of Object.keys(PRESET_META)) {
-    const g = PRESET_META[id].group;
-    if (!groups.includes(g)) groups.push(g);
-  }
-  for (const g of groups) {
-    const title = document.createElement('div');
-    title.className = 'preset-group';
-    title.textContent = g;
-    wrap.appendChild(title);
-    for (const id of Object.keys(PRESET_META)) {
-      if (PRESET_META[id].group !== g) continue;
-      const b = document.createElement('button');
-      b.dataset.preset = id;
-      b.textContent = PRESET_META[id].name;
-      b.title = `${PRESET_META[id].name}（${id}）`;
-      wrap.appendChild(b);
-    }
-  }
-})();
-
-document.querySelectorAll('[data-preset]').forEach((b) => {
-  b.addEventListener('click', () => loadPreset(b.dataset.preset));
-});
+/* 预设按钮：按 PRESET_META 分组动态生成（支持本地自定义标记） */
+renderPresetButtons();
+$('btn-save-preset').addEventListener('click', savePreset);
+$('btn-reset-presets').addEventListener('click', resetAllPresets);
 bindSteppers();
 $('btn-add-row').addEventListener('click', addRow);
 $('btn-add-key').addEventListener('click', addKey);
