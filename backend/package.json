@@ -1,0 +1,29 @@
+{
+  "name": "kb-design-backend",
+  "version": "1.0.0",
+  "description": "Keyboard design backend: KLE -> plate DXF / KiCad PCB / case STL (KLE + SwillKB-style + Ergogen)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "keywords": [
+    "keyboard",
+    "kle",
+    "ergogen",
+    "dxf",
+    "kicad"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@jscad/io": "^2.4.14",
+    "@jscad/modeling": "^2.13.0",
+    "archiver": "^8.0.0",
+    "cors": "^2.8.6",
+    "dxf-writer": "^1.18.4",
+    "ergogen": "^4.2.1",
+    "express": "^5.2.1",
+    "three": "^0.186.0"
+  }
+}
