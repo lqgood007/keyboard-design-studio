@@ -144,6 +144,8 @@ powershell -ExecutionPolicy Bypass -File .\start-keyboard.ps1 -ServiceOnly   # �
 ## 四、使用流程
 
 1. **选预设**：26 款分组可选；或粘贴导入任意 KLE raw JSON / Ergogen YAML
+   - **从 keyboard-layout-editor.com 导入**：打开 KLE → 设计好配列 → `Download JSON` 复制 → 在本页右侧 JSON 框粘贴 → 点「粘贴导入」；
+     也支持直接粘贴 **KLE 分享链接**（`...?layout=...`）、**Markdown 代码块**包裹的 JSON、或首尾带说明文字的 JSON（自动提取数组）
 2. **编辑配列**：点选按键 → 属性面板 **− 数值 ＋** 步进控件（X/Y/W/H 0.25u、旋转 5°，按住连发），
    宽/高/旋转带常用值下拉（datalist）；方向键微调；加/删键
 3. **顶部标签页**：「配列设计」/「键帽模型」两个标签在同一页面切换——

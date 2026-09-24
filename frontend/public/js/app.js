@@ -4270,7 +4270,7 @@ function loadPreset0(name) {
 
 function importFromTextarea() {
   try {
-    const parsed = JSON.parse($('json-area').value);
+    const parsed = tryParseKle($('json-area').value);
     if (!Array.isArray(parsed)) throw new Error('顶层必须是数组（KLE raw data）');
     state.keys = flattenRows(parsed);
     state.selected = -1;
@@ -4279,6 +4279,32 @@ function importFromTextarea() {
   } catch (e) {
     setStatus('导入失败: ' + e.message, 'err');
   }
+}
+
+/* 智能解析 KLE raw data：兼容多种粘贴形态
+ *  1) KLE「Download JSON」输出的裸数组：[["Esc","1",...], ...]
+ *  2) 分享 URL：...?layout=%5B%5B...%5D%5D（layout 参数携带完整 KLE 数据）
+ *  3) Markdown 代码块包裹的 JSON（```json ... ```）
+ *  4) 首尾带说明文字/多余符号的 JSON（截取首个 [ 到最后一个 ] 再解析）
+ */
+function tryParseKle(text) {
+  if (!text || !text.trim()) throw new Error('内容为空，请先复制 KLE 数据');
+  // 1) URL：取 layout 查询参数（KLE 分享链接形态）
+  const urlMatch = text.match(/layout=([^&\s#"]+)/);
+  if (urlMatch) {
+    try { return JSON.parse(decodeURIComponent(urlMatch[1])); } catch (e) { /* fallthrough */ }
+  }
+  // 2) 剥离 Markdown 代码块围栏
+  let t = text.replace(/```(?:json|javascript)?\s*([\s\S]*?)```/g, '$1').trim();
+  // 3) 直接 JSON.parse
+  try { return JSON.parse(t); } catch (e) { /* fallthrough */ }
+  // 4) 截取首个 [ 到最后一个 ] 再解析（容忍前后说明文字）
+  const s = t.indexOf('[');
+  const e2 = t.lastIndexOf(']');
+  if (s >= 0 && e2 > s) {
+    try { return JSON.parse(t.slice(s, e2 + 1)); } catch (e) { /* fallthrough */ }
+  }
+  throw new Error('无法识别为 KLE raw data（请粘贴 KLE 网站的 Download JSON 或分享链接）');
 }
 
 function copyJson() {
