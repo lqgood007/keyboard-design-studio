@@ -111,10 +111,13 @@ function keycapGeo(p, opts = {}) {
 
   // 1) 逐层截面（KeyV2 placed_shape_slice）
   //    顶面边缘圆角：edgeR>0 时，顶部 edgeFrac 高度内插入 subLayers 个细分层，
-  //    截面尺寸沿 smoothstep 曲线从线性过渡值圆弧过渡到顶面值
-  //    （smoothstep 两端切线为 0：与下方线性层、与顶面均圆滑相接 → 消除锋利折角）
+  //    截面尺寸沿 三次 Hermite 曲线从线性过渡值过渡到顶面值：
+  //      起点切线 = 壁面斜率（与下方线性层 C¹ 连续，无折角）
+  //      终点切线 = 0（顶面水平相切，圆滑收口）
+  //    相比 smoothstep（两端切线 0 → 起点与斜壁形成折角），Hermite 全轮廓斜率连续，
+  //    与侧壁是"完全曲面"的圆滑过渡，无可见棱线
   const edgeFrac = edgeR > 0 && totalDepth > 0 ? Math.min(0.5, edgeR / totalDepth) : 0;
-  const subLayers = edgeFrac > 0 ? Math.max(4, Math.round(edgeR * 8)) : 0; // 顶部圆角细分层数
+  const subLayers = edgeFrac > 0 ? Math.max(12, Math.round(edgeR * 16)) : 0; // 顶部圆角细分层数
   const rings = [];            // 每层 3D 环点
   const local = [];            // 每层局部 (u, v)（顶层 dish 用）
   const buildRing = (prog) => {
@@ -159,19 +162,27 @@ function keycapGeo(p, opts = {}) {
     lastLin = prog;
   }
   if (edgeFrac > 0) {
-    // 顶部圆角细分层：prog 从 lastLin 平滑插值到 1，
-    // 截面尺寸沿 smoothstep 从线性过渡值圆弧过渡到顶面值
-    // （smoothstep 两端切线为 0 → 与线性层、与顶面均圆滑相接，消除锋利折角）
-    const ss0 = (1 - lastLin) * sideSculpt;
-    const w0 = baseW - (widthDiff - ss0) * lastLin;  // 过渡起点宽
-    const d0 = baseD - (heightDiff - ss0) * lastLin; // 过渡起点深
+    // 顶部圆角细分层：prog 从 lastLin 到 1，截面半宽沿三次 Hermite 插值，
+    // 起点切线延续壁面斜率（C¹ 连续无折角），终点切线 0（顶面水平相切）
+    const fe = 1 - lastLin;                          // 过渡段 prog 长度
+    const ssLast = (1 - lastLin) * sideSculpt;
+    const w0 = baseW - (widthDiff - ssLast) * lastLin;  // 过渡起点宽
+    const d0 = baseD - (heightDiff - ssLast) * lastLin; // 过渡起点深
     const w1 = baseW - widthDiff;                    // prog=1 顶面宽
     const d1 = baseD - heightDiff;                   // prog=1 顶面深
+    const hw0 = w0 / 2, hd0 = d0 / 2, hw1 = w1 / 2, hd1 = d1 / 2;
+    // 壁面斜率（半宽对 prog）：dw/dprog = -diff + sideSculpt·(1-2·prog)
+    const sW = (-widthDiff + sideSculpt * (1 - 2 * lastLin)) * fe / 2; // 半宽对 t 起点斜率
+    const sD = (-heightDiff + sideSculpt * (1 - 2 * lastLin)) * fe / 2;
     for (let i = 0; i <= subLayers; i++) {
       const t = i / subLayers;                       // 0..1
-      const f = t * t * (3 - 2 * t);                 // smoothstep
-      const prog = lastLin + (1 - lastLin) * t;
-      buildRing2(prog, w0 + (w1 - w0) * f, d0 + (d1 - d0) * f);
+      const t2 = t * t, t3 = t2 * t;
+      const h00 = 2 * t3 - 3 * t2 + 1;               // Hermite 基函数
+      const h10 = t3 - 2 * t2 + t;
+      const h01 = -2 * t3 + 3 * t2;
+      const hw = h00 * hw0 + h10 * sW + h01 * hw1;   // h11·0 = 0（终点斜率 0）
+      const hd = h00 * hd0 + h10 * sD + h01 * hd1;
+      buildRing2(lastLin + fe * t, hw * 2, hd * 2);
     }
   }
 
