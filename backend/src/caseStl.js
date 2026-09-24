@@ -44,8 +44,9 @@ function roundedPts(w, h, r, z) {
 }
 
 /* 放样：底部矩形(可圆角) → 顶部矩形(可圆角+倒角内缩) 的截锥体 */
-function loftRect(baseSize, topSize, baseR, topR, height, slices = 4) {
-  const base = primitives.rectangle({ size: baseSize });
+function loftRect(baseSize, topSize, baseR, topR, height, slices = 12) {
+  // base 必须与第一 slice 轮廓一致（圆角），否则 capStart 封底与侧面带不匹配留下边界边
+  const base = extrusions.slice.fromPoints(roundedPts(baseSize[0], baseSize[1], baseR, 0));
   return extrusions.extrudeFromSlices({
     numberOfSlices: Math.max(2, slices),
     capStart: true,
@@ -75,6 +76,59 @@ function loftRect(baseSize, topSize, baseR, topR, height, slices = 4) {
  * @param {string} opts.layerMode - 'single' | 'split'（默认 single）
  * @returns {Object} { case, bottom, plate } 三段 ASCII STL（case 为合并件）
  */
+/* 一体外壳框架：底部柱体(w×h) + 面板倒角截锥(w×h→w-2c×h-2c)，单件无 union 共面 */
+/* 底板/面板基体（无孔，供分件使用） */
+function makeBaseBottom(w, h, bottomThickness, cornerRadius) {
+  return cornerRadius > 1e-6
+    ? extrusions.extrudeLinear({ height: bottomThickness },
+        primitives.roundedRectangle({ size: [w, h], roundRadius: cornerRadius }))
+    : extrusions.extrudeLinear({ height: bottomThickness },
+        primitives.rectangle({ size: [w, h] }));
+}
+function makeBasePlate(w, h, bottomThickness, plateThickness, cornerRadius, chamfer) {
+  if (chamfer > 1e-6) {
+    return loftRect([w, h], [w - 2 * chamfer, h - 2 * chamfer],
+      cornerRadius, Math.max(0, cornerRadius - chamfer), plateThickness);
+  }
+  return cornerRadius > 1e-6
+    ? extrusions.extrudeLinear({ height: plateThickness },
+        primitives.roundedRectangle({ size: [w, h], roundRadius: cornerRadius }))
+    : extrusions.extrudeLinear({ height: plateThickness },
+        primitives.rectangle({ size: [w, h] }));
+}
+
+function caseFrame(w, h, bottomThickness, plateThickness, cornerRadius, chamfer, slices = 16) {
+  const totalH = bottomThickness + plateThickness;
+  if (chamfer <= 1e-6) {
+    const base = cornerRadius > 1e-6
+      ? primitives.roundedRectangle({ size: [w, h], roundRadius: cornerRadius })
+      : primitives.rectangle({ size: [w, h] });
+    return extrusions.extrudeLinear({ height: totalH }, base);
+  }
+  return extrusions.extrudeFromSlices({
+    numberOfSlices: Math.max(8, slices),
+    capStart: true,
+    capEnd: true,
+    callback: (progress) => {
+      const z = progress * totalH;
+      let cw = w, ch = h, r = cornerRadius;
+      if (z > bottomThickness) {
+        const t = (z - bottomThickness) / plateThickness;
+        cw = w - 2 * chamfer * t;
+        ch = h - 2 * chamfer * t;
+        r = Math.max(0, cornerRadius - chamfer * t);
+      }
+      return extrusions.slice.fromPoints(roundedPts(cw, ch, r, z));
+    },
+  }, extrusions.slice.fromPoints(roundedPts(w, h, cornerRadius, 0)));
+}
+
+/* 垂直螺丝通孔（沿 z 轴，从 zBase 向上贯穿） */
+function screwHolesAt(positions, radius, height, zBase) {
+  const cyl = primitives.cylinder({ radius, height, segments: 24 });
+  return positions.map(([x, y]) => transforms.translate([x, y, zBase], cyl));
+}
+
 function generateCaseStl(raw, opts = {}) {
   const { keys } = parseKle(raw);
   const cutout = opts.cutout ?? 14;
@@ -83,8 +137,10 @@ function generateCaseStl(raw, opts = {}) {
   const plateThickness = opts.plateThickness ?? 1.5;
   const screwHoles = opts.screwHoles !== false;
   const screwDia = opts.screwDia ?? 3.2;
-  const screwInset = opts.screwInset ?? 6;
   const cornerRadius = opts.cornerRadius ?? 0;
+  // 螺丝孔中心需避开四角圆角：孔缘到圆角弧心距离 > 0
+  //   min inset = cornerRadius + screwDia/2 + 3（留 3mm 安全壁厚），下限 6
+  const screwInset = opts.screwInset ?? Math.max(6, cornerRadius + screwDia / 2 + 3);
   const chamfer = opts.chamfer ?? 0;
   const layerMode = opts.layerMode ?? 'single';
 
@@ -94,81 +150,53 @@ function generateCaseStl(raw, opts = {}) {
   const cx = (bounds.minX + bounds.maxX) / 2;
   const cy = (bounds.minY + bounds.maxY) / 2;
 
-  /* 1) 底板（可圆角） */
-  let bottom;
-  if (cornerRadius > 1e-6) {
-    bottom = extrusions.extrudeLinear(
-      { height: bottomThickness },
-      primitives.roundedRectangle({ size: [w, h], roundRadius: cornerRadius })
-    );
-  } else {
-    bottom = extrusions.extrudeLinear(
-      { height: bottomThickness },
-      primitives.rectangle({ size: [w, h] })
-    );
-  }
-
-  /* 2) 面板（可圆角 + 上缘倒角），带切孔 */
-  let plate;
-  if (chamfer > 1e-6) {
-    // 截锥体：底部 w×h → 顶部内缩 chamfer（45° 倒角），高度 plateThickness
-    plate = loftRect([w, h], [w - 2 * chamfer, h - 2 * chamfer],
-      cornerRadius, Math.max(0, cornerRadius - chamfer), plateThickness);
-  } else if (cornerRadius > 1e-6) {
-    plate = extrusions.extrudeLinear(
+  /* 1) 键切孔：面板层盲孔（合并件）与贯穿孔（分件 plate） */
+  const keyHolesBlind = keys.map((k) => {
+    const rot = (k.rot || 0) * Math.PI / 180;
+    let hole = extrusions.extrudeLinear(
       { height: plateThickness },
-      primitives.roundedRectangle({ size: [w, h], roundRadius: cornerRadius })
+      primitives.rectangle({ size: [cutout, cutout] })
     );
-  } else {
-    plate = extrusions.extrudeLinear(
-      { height: plateThickness },
-      primitives.rectangle({ size: [w, h] })
-    );
-  }
-
-  /* 切孔（垂直贯穿，旋转键跟随） */
-  const holes = keys.map((k) => {
+    if (rot !== 0) hole = transforms.rotate([0, 0, rot], hole);
+    return transforms.translate([k.cx - cx, k.cy - cy, bottomThickness], hole);
+  });
+  const keyHolesThru = keys.map((k) => {
     const rot = (k.rot || 0) * Math.PI / 180;
     let hole = extrusions.extrudeLinear(
       { height: plateThickness + 1 },
       primitives.rectangle({ size: [cutout, cutout] })
     );
-    if (rot !== 0) {
-      hole = transforms.rotate([0, 0, rot], hole);
-    }
-    return transforms.translate([k.cx - cx, k.cy - cy, -0.01], hole);
+    if (rot !== 0) hole = transforms.rotate([0, 0, rot], hole);
+    return transforms.translate([k.cx - cx, k.cy - cy, bottomThickness - 0.01], hole);
   });
-  plate = booleans.subtract(plate, holes);
 
-  /* 3) 螺丝通孔（贯穿，底板/面板各自挖） */
+  /* 2) 螺丝通孔（垂直，沿 z 轴贯穿） */
   const screwR = screwDia / 2;
-  const screw = primitives.cylinder({
-    radius: screwR,
-    height: Math.max(bottomThickness, plateThickness) + 4,
-    segments: 24,
-  });
   const positions = [
     [-w / 2 + screwInset, -h / 2 + screwInset],
     [w / 2 - screwInset, -h / 2 + screwInset],
     [-w / 2 + screwInset, h / 2 - screwInset],
     [w / 2 - screwInset, h / 2 - screwInset],
   ];
-  if (screwHoles && screwDia > 0) {
-    const bottomHoles = positions.map(([x, y]) =>
-      transforms.translate([x, y, -2], transforms.rotateX(Math.PI / 2, screw))
-    );
-    bottom = booleans.subtract(bottom, bottomHoles);
-    const plateHoles = positions.map(([x, y]) =>
-      transforms.translate([x, y, -2], transforms.rotateX(Math.PI / 2, screw))
-    );
-    plate = booleans.subtract(plate, plateHoles);
-  }
+  const screwCase = screwHolesAt(positions, screwR, bottomThickness + plateThickness + 1, -0.5);
+  const screwBottom = screwHolesAt(positions, screwR, bottomThickness + 1, -0.5);
 
-  /* 4) 合并件（预览/单件打印用） */
-  const caseGeom = booleans.union(
-    transforms.translate([0, 0, 0], bottom),
-    transforms.translate([0, 0, bottomThickness], plate)
-  );
+  /* 3) 底板 / 面板分件（各自封闭，split 模式用，统一全局坐标） */
+  let bottomFinal = makeBaseBottom(w, h, bottomThickness, cornerRadius);
+  if (screwHoles && screwDia > 0) {
+    bottomFinal = booleans.subtract(bottomFinal, screwBottom);
+  }
+  let plateFinal = transforms.translate([0, 0, bottomThickness],
+    makeBasePlate(w, h, bottomThickness, plateThickness, cornerRadius, chamfer));
+  // 面板只挖键切孔：分件打印时螺丝孔由底板承担，避免孔壁穿过曲面产生非流形边
+  plateFinal = booleans.subtract(plateFinal, keyHolesThru);
+
+  /* 4) 合并件（预览/单件打印）：一体框架 - 盲孔 - 贯穿螺丝孔 */
+  let caseGeom = caseFrame(w, h, bottomThickness, plateThickness, cornerRadius, chamfer);
+  caseGeom = booleans.subtract(caseGeom, keyHolesBlind);
+  if (screwHoles && screwDia > 0) {
+    caseGeom = booleans.subtract(caseGeom, screwCase);
+  }
 
   const serialize = (geom) => {
     const stl = stlSerializer.serialize({ binary: false }, geom);
@@ -177,8 +205,8 @@ function generateCaseStl(raw, opts = {}) {
 
   return {
     case: serialize(caseGeom),
-    bottom: serialize(bottom),
-    plate: serialize(plate),
+    bottom: serialize(bottomFinal),
+    plate: serialize(plateFinal),
     layerMode,
   };
 }
