@@ -24,6 +24,8 @@ function bindTabs() {
       document.getElementById('view-editor').hidden = v !== 'editor';
       document.getElementById('view-gallery').hidden = v !== 'gallery';
       document.getElementById('view-keycap').hidden = v !== 'keycap';
+      // 首次进入键帽页：自动渲染当前配置模型（scene 未就绪时跳过，init 后兜底）
+      if (v === 'keycap' && scene) requestModel();
     });
   });
 }
@@ -262,10 +264,11 @@ function init() {
   if ($('kc-p-topcorner')) $('kc-p-topcorner').addEventListener('change', renderParams);
   $('kc-download-stl').addEventListener('click', downloadStl);
   $('kc-reset-view').addEventListener('click', () => { ROT.x = 0.5; ROT.y = 0.4; ZOOM = 1.2; });
-  renderParams();
+  // 顺序：先建 3D（scene/renderer 就绪）再 renderParams（内部 requestModel 依赖 scene）
   if (window.WebGLRenderingContext) {
     try { initThree(); } catch (e) { console.warn('WebGL 初始化失败', e); }
   }
+  renderParams();
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
